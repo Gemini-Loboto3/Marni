@@ -10,12 +10,13 @@
 #include <timeapi.h>
 #include "debug_new.h"
 
-#define newclear(TYPE) new(calloc(sizeof(TYPE), 1)) TYPE();
+#define newclear(TYPE)		new(calloc(sizeof(TYPE), 1)) TYPE();
+#define delclear(p,TYPE)	delete(free(p)) ~TYPE()
 
 //CMarni *pMarni = NULL;
 
 CConfig config;
-CMarni pMarni;
+CMarni *pMarni = NULL;
 
 #define MAX_LOADSTRING 100
 
@@ -52,16 +53,17 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-	//HardwareBreakpoint bp;
-	//pMarni = newclear(CMarni);
-	//bp.Set(&pMarni->MarniBitsMain.field_44, 4, HardwareBreakpoint::Write);
-	pMarni.Init(hWnd, 320, 240, 0, 1);
+	// create a zeroed object
+	void *pool = calloc(sizeof(CMarni), 1);
+	pMarni = new(pool) CMarni();
+	// initialize crap
+	pMarni->Init(hWnd, 320, 240, 0, 1);
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MARNITEST));
 
     MSG msg;
 
-	pMarni.ClearBG_ = 1;
+	pMarni->ClearBG_ = 1;
 
 	DWORD time_init = timeGetTime();
     // Main message loop:
@@ -71,7 +73,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 		if (time_now - time_init >= 1000)
 		{
 			time_init = time_now;
-			pMarni.ClearBg();
+			pMarni->ClearBg();
 		}
 
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -80,6 +82,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);
         }
     }
+
+	pMarni->~CMarni();
+	free(pool);
 
     return (int) msg.wParam;
 }
@@ -152,10 +157,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (message == WM_SIZE)
+		printf("Resizing\n");
+
 	//if (pMarni)
-	if(pMarni.Is_gpu_init)
+	if(pMarni)
 	{
-		if (!pMarni.Message(hWnd, message, wParam, lParam))
+		if (!pMarni->Message(hWnd, message, wParam, lParam))
 			return 0;
 	}
 

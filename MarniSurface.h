@@ -32,14 +32,15 @@ public:
 	int field_38;
 	int field_3C;
 	int Is_open;
-	int field_44;
+	int field_44;		// Is_copy
 	int Has_palette;
 	int field_4C;
 	int field_50;
 
 	int   WriteBitmap(LPCSTR lpFilename);
+	int   copy(CMarniSurface2 &srf);
 	void* CalcAddress(int x, int y);
-
+	int   SetAddress(u8* pData, u8 *pPalette);
 	int   SetIndexColor(int x, int y, u32 rgb, u32 flag);
 	int   SetPaletteColor(int index, u32 rgb, int a3);
 	int   SetColor(int x, int y, u32 rgb, int mode);
@@ -47,13 +48,12 @@ public:
 	int   GetColor(int x, int y, u32 *rgb);
 	int   GetCurrentColor(int x, int y, u32 *pixel);
 	int   GetPaletteColor(int index, u32 *rgb);
-	int   GetIndexColor(int x, int y, u32 *rgb);
+	int   GetIndexColor(int x, int y, u32 *rgb) { return 1; }
 	
 	int   CreateWork(int width, int height, int bmp_depth, int srf_depth);
 
 	// operator stuff
-	int   copy(CMarniSurface2 &srf);
-	int   operator = (CMarniSurface2 &srf)
+	__inline int operator = (CMarniSurface2 &srf)
 	{
 		return this->copy(srf);
 	}
@@ -85,10 +85,10 @@ public:
 
 	int CreateCompatibleSurface(IDirectDraw *pDD, DDSURFACEDESC *desc);
 	int CreateOffscreenSurface(IDirectDraw *pDD, DDSURFACEDESC *desc);
-	int CreateOffscreenSurface(IDirectDraw *pDD, int dwWidth, int dwHeight);
-	int DirectDrawSurface(IDirectDraw *pDD, DDSURFACEDESC *pDesc);
 
 	void BltSurface(RECT *dstrect, RECT *srcrect, CMarniSurface *pSrcSurface, int a5, int a6){}
+	int  CreateOffscreenSurface(IDirectDraw *pDD, int dwWidth, int dwHeight);
+	int  DirectDrawSurface(IDirectDraw *pDD, DDSURFACEDESC *pDesc);
 
 	int operator =(CMarniSurface2 &srf)
 	{

@@ -32,7 +32,7 @@ public:
 	//virtual int Clear(DWORD *a2, int a3, int a4, int a5);
 	virtual int Render();
 	virtual int Message(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-	virtual int CreateTexture(DWORD a2, DWORD *a3);
+	virtual int CreateTexture(CMarniSurface *pSrf, DWORD *a3, DWORD *a4);
 	virtual int CreateObject(DWORD *a2, DWORD a3);
 	virtual int Release(int type);
 	virtual int ClearBuffer(int type);

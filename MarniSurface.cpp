@@ -157,6 +157,20 @@ int CMarniSurface2::Release()
 
 //////////////////////////////////////////
 // regular methods
+int CMarniSurface2::SetAddress(u8* pData, u8 *pPalette)
+{
+	if (this->Is_open)
+		return 0;
+	if (this->field_44)
+		return 0;
+
+	this->pData = pData;
+	this->pPalette = pPalette;
+	this->field_44 = 1;
+
+	return 1;
+}
+
 int CMarniSurface2::copy(CMarniSurface2 &srf)
 {
 	try
@@ -528,6 +542,45 @@ int CMarniSurface2::SetIndexColor(int x, int y, u32 rgb, u32 flag)
 
 int CMarniSurface2::GetCurrentColor(int x, int y, u32 *pixel)
 {
+	if (this->Has_palette)
+		return this->GetIndexColor(x, y, pixel);
+
+	u8 *pB = (u8*)this->CalcAddress(x, y);
+	if (!pB)
+		return 0;
+
+	u32 p;
+	switch (this->sdesc.dwRGBBitCount)
+	{
+	case 4:
+		p = *pB;	// get both nibbles
+		if (!this->field_50)		// nibble endianness?
+		{
+			if (!(x & 1)) p >>= 4;	// upper nibble
+			else p &= 0xf;			// lower nibble
+		}
+		else
+		{
+			if (x & 1) p >>= 4;		// upper nibble
+			else p &= 0xf;			// lower nibble
+		}
+		break;
+	case 8:
+		p = *pB;
+		break;
+	case 16:
+		p = *(u16*)pB;
+		break;
+	case 32:
+		p = *(u32*)pB;
+		break;
+	}
+
+	*pixel = ((this->sdesc.field_E & (p >> LOBYTE(this->sdesc.dwBBitMask_setcnt))) << (8 - LOBYTE(this->sdesc.field_10))) & 0xFF |
+		((((this->sdesc.field_2 & (p >> LOBYTE(this->sdesc.dwRBitMask_setcnt))) << (8 - LOBYTE(this->sdesc.field_4))) & 0xFF) << 16) |
+		(((u16)this->sdesc.field_14 & (p >> LOBYTE(this->sdesc.dwRGBAlphaBitMask_setcnt))) << (8 - LOBYTE(this->sdesc.field_16)) << 16 |
+		(this->sdesc.field_8 & (p >> LOBYTE(this->sdesc.dwRBitMask_cnt))) << (8 - LOBYTE(this->sdesc.field_A))) << 8;
+
 	return 1;
 }
 
@@ -634,8 +687,8 @@ int CMarniSurface::Lock(u8 **ppBitmap, u8 **ppPalette)
 		this->sdesc.field_10 = 8;
 	}
 
-	if (*ppBitmap) *ppBitmap = this->pData;
-	if (*ppPalette) *ppPalette = this->pPalette;
+	if (ppBitmap) *ppBitmap = this->pData;
+	if (ppPalette) *ppPalette = this->pPalette;
 
 	this->field_C = 1;
 

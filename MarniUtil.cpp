@@ -418,12 +418,22 @@ u32 D3DIBPPToDDBD(int bpp)
 
 void Marni1Out(char *fmt, ...)
 {
+	va_list myargs;
+	char buffer[2048];
 
+	va_start(myargs, fmt);
+	vsprintf(buffer, fmt, myargs);
+	strcat(buffer, "\n");
+	OutputDebugString(buffer);
+	va_end(myargs);
 }
 
 void Marni2Out(char *text, char *caption)
 {
+	char buffer[2048];
 
+	sprintf(buffer, "[%s] %s\n", caption, text);
+	OutputDebugString(buffer);
 }
 
 int Adjust_rect(RECT *lpRect, int *adjust, RECT *lpRect1)

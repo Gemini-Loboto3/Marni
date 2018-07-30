@@ -173,7 +173,101 @@ int CMarni::Message(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	return 1;
 }
 
-int CMarni::CreateTexture(DWORD a2, DWORD *a3) { return 1; }
+int CMarni::CreateTexture(CMarniSurface *pSrf, DWORD *a3, DWORD *a4)
+{
+	if (!this->Is_gpu_init)
+		return 0;
+
+	if (pSrf->dwWidth > 256 || pSrf->dwHeight)
+		return 0;
+
+	int index = 1;
+	CMarni216 **pSearch = &this->pSurfaces[index];
+	for (;; index++, pSearch++)
+	{
+		if (index >= 512) return 0;
+		if (!*pSearch) break;
+	}
+
+	CMarni216 *pObj = new CMarni216;
+	this->pSurfaces[index] = pObj;
+	//pObj->field_0 = 0;
+	pObj->pSurfEx = NULL;
+	pObj->field_D0 = (int)a3;
+	pObj->field_D4 = 0;
+	memset(&pObj->desc, 0, sizeof(pObj->desc));
+
+	// only in hardware mode
+	if (this->card != GFX_SOFTWARE)
+	{
+		if (pSrf->Has_palette)
+		{
+			pObj->Surface.CreateWork(pSrf->dwWidth, pSrf->dwHeight, pSrf->sdesc.dwRGBBitCount, pSrf->sdesc.bpp);
+			pObj->Surface.Blt(NULL, NULL, pSrf, 0, 0);
+			pObj->Surface.Lock(NULL, NULL);
+			pSrf->Lock(NULL, NULL);
+			for (int i = 0, si = 1 << pSrf->sdesc.dwRGBBitCount; i < si; i++)
+			{
+				u32 p;
+				pSrf->GetPaletteColor(i, &p);
+				pObj->Surface.SetPaletteColor(i, p, 0);
+			}
+			pObj->Surface.Unlock();
+			pSrf->Unlock();
+		}
+		else
+		{
+			pObj->Surface.CreateWork(pSrf->dwWidth, pSrf->dwHeight, pSrf->sdesc.dwRGBBitCount, 0);
+			memcpy(&pObj->Surface.sdesc, &pSrf->sdesc, sizeof(pSrf->sdesc));
+			pObj->Surface = *pSrf;
+		}
+
+		if (a4) *a4 = 1;
+
+		if (!this->ReloadTexture(index))
+		{
+			if (this->pSurfaces[index])
+				delete this->pSurfaces[index];
+			return 0;
+		}
+
+		this->ClearBg();
+		this->Vmem_stats();
+	}
+	// software mode
+	else
+	{
+		DWORD dwCount;
+		if (pSrf->Has_palette)
+		{
+		}
+		else
+		{
+		}
+
+		if (pSrf->sdesc.dwRGBBitCount == dwCount && *a3 & 2 && this->Use_VRAM)
+		{
+			CMarniSurface *pS = new CMarniSurface;
+			pObj->pSurfEx = (CMarniSurfaceEx*)pS;
+
+			if (pObj->pSurfEx->CreateOffscreenSurface(this->pDirectDraw, pSrf->dwWidth, pSrf->dwHeight))
+			{
+				RECT rc;
+				SetRect(&rc, 0, 0, pSrf->dwWidth - 1, pSrf->dwHeight - 1);
+				pObj->pSurfEx->Blt(&rc, &rc, &pObj->Surface, 0, 0);
+			}
+			else
+			{
+				delete pS;
+				pObj->pSurfEx = NULL;
+				return 0;
+			}
+		}
+	}
+
+	return index;
+}
+
 int CMarni::CreateObject(DWORD *a2, DWORD a3) { return 1; }
 int CMarni::Release(int type)
 {
@@ -318,14 +412,13 @@ int CMarni::Resize(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 			this->field_308 = 0;
 		}
 	}
-
-	if (this->Is_minimized)
+	else if (this->Is_minimized)
 	{
 		this->Is_minimized = 0;
 		DefWindowProcA(hWnd, Msg, wParam, lParam);
 		return 1;
 	}
-	if (this->Is_active)
+	else if (this->Is_active)
 	{
 		this->Is_active = 0;
 		this->XSize = LOWORD(lParam);
@@ -651,7 +744,6 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 		}
 
 		// here there was code debugouting driver names, we don't need that shit either
-#if 0
 		if (!this->InitAll())
 			throw 0;
 
@@ -693,10 +785,6 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 			if (!this->ReloadTexture(0))
 				throw 0;
 		}
-#else
-		this->Is_active = 1;
-		this->Is_gpu_init = 1;
-#endif
 	}
 	catch (int)
 	{
@@ -1161,7 +1249,7 @@ int CMarni::ReloadTexture(int index)
 			memcpy(&pSurf->desc, &ddesc, sizeof(ddesc));
 			pSex->CreateTextureObject();
 			ddesc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
-			pSex->CreateCompatibleSurface(this->pDirectDraw, &ddesc);
+			surf_ex.CreateCompatibleSurface(this->pDirectDraw, &ddesc);
 			// perform blit tests
 			RECT r0, r1;
 			SetRect(&r0, 0, 0, pSurf->Surface.dwWidth - 1, pSurf->Surface.dwHeight - 1);
