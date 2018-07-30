@@ -1,0 +1,402 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="dxgl">
+      <UniqueIdentifier>{9e7bca0c-b0af-4cdd-8cfa-2df3298dcff3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarniTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Marni.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarniSurface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cfgmgr\cfgmgr.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="cfgmgr\crc32.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="cfgmgr\LibSha256.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="cfgmgr\version.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\BufferObject.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\common.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\const.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\dxgldraw.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glClassFactory.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3D.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DDevice.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DExecuteBuffer.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DLight.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DMaterial.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DTexture.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DVertexBuffer.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirect3DViewport.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirectDraw.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirectDrawClipper.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirectDrawGammaControl.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirectDrawPalette.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glDirectDrawSurface.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glExtensions.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glRenderer.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glRenderWindow.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glTexture.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\glUtil.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\hooks.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\d3d.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\d3dcaps.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\d3dtypes.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\ddraw.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\GL\glext.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\GL\wglext.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\include\winedef.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\matrix.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\buffer.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\HDE\hde32.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\HDE\hde64.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\HDE\pstdint.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\HDE\table32.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\HDE\table64.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\MinHook.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\minhook\trampoline.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\resource.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\scalers.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\ShaderGen2D.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\ShaderGen3D.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\ShaderManager.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\string.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\struct.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\struct_command.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\timer.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\trace.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="dxgl\util.h">
+      <Filter>dxgl</Filter>
+    </ClInclude>
+    <ClInclude Include="MarniUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarniPrim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hardwarebp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Marni.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MarniSurface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ini.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cfgmgr\cfgmgr.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="cfgmgr\crc32.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="cfgmgr\LibSha256.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\BufferObject.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\const.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\dxgl.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\dxgldraw.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\dxguid.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glClassFactory.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3D.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DDevice.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DExecuteBuffer.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DLight.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DMaterial.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DTexture.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DVertexBuffer.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirect3DViewport.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirectDraw.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirectDrawClipper.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirectDrawGammaControl.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirectDrawPalette.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glDirectDrawSurface.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glExtensions.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glRenderer.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glRenderWindow.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glTexture.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\glUtil.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\hooks.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\matrix.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\minhook\buffer.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\minhook\HDE\hde32.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\minhook\HDE\hde64.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\minhook\hook.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\minhook\trampoline.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\precomp.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\scalers.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\ShaderGen2D.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\ShaderGen3D.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\ShaderManager.cpp">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\string.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\timer.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\trace.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="dxgl\util.c">
+      <Filter>dxgl</Filter>
+    </ClCompile>
+    <ClCompile Include="MarniUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MarniPrim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hardwarebp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug_new.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MarniTest.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="MarniTest.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dxgl\include\d3dvec.inl">
+      <Filter>dxgl</Filter>
+    </None>
+  </ItemGroup>
+</Project>

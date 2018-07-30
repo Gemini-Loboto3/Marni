@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3E5CDC6D-C3DE-4230-BEF5-2BB0533AC720}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>MarniTest</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderOutputFile />
+      <AdditionalIncludeDirectories>.;..;..\.</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="cfgmgr\cfgmgr.h" />
+    <ClInclude Include="cfgmgr\crc32.h" />
+    <ClInclude Include="cfgmgr\LibSha256.h" />
+    <ClInclude Include="cfgmgr\version.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="debug_new.h" />
+    <ClInclude Include="dxgl\BufferObject.h" />
+    <ClInclude Include="dxgl\common.h" />
+    <ClInclude Include="dxgl\const.h" />
+    <ClInclude Include="dxgl\dxgldraw.h" />
+    <ClInclude Include="dxgl\glClassFactory.h" />
+    <ClInclude Include="dxgl\glDirect3D.h" />
+    <ClInclude Include="dxgl\glDirect3DDevice.h" />
+    <ClInclude Include="dxgl\glDirect3DExecuteBuffer.h" />
+    <ClInclude Include="dxgl\glDirect3DLight.h" />
+    <ClInclude Include="dxgl\glDirect3DMaterial.h" />
+    <ClInclude Include="dxgl\glDirect3DTexture.h" />
+    <ClInclude Include="dxgl\glDirect3DVertexBuffer.h" />
+    <ClInclude Include="dxgl\glDirect3DViewport.h" />
+    <ClInclude Include="dxgl\glDirectDraw.h" />
+    <ClInclude Include="dxgl\glDirectDrawClipper.h" />
+    <ClInclude Include="dxgl\glDirectDrawGammaControl.h" />
+    <ClInclude Include="dxgl\glDirectDrawPalette.h" />
+    <ClInclude Include="dxgl\glDirectDrawSurface.h" />
+    <ClInclude Include="dxgl\glExtensions.h" />
+    <ClInclude Include="dxgl\glRenderer.h" />
+    <ClInclude Include="dxgl\glRenderWindow.h" />
+    <ClInclude Include="dxgl\glTexture.h" />
+    <ClInclude Include="dxgl\glUtil.h" />
+    <ClInclude Include="dxgl\hooks.h" />
+    <ClInclude Include="dxgl\include\d3d.h" />
+    <ClInclude Include="dxgl\include\d3dcaps.h" />
+    <ClInclude Include="dxgl\include\d3dtypes.h" />
+    <ClInclude Include="dxgl\include\ddraw.h" />
+    <ClInclude Include="dxgl\include\GL\glext.h" />
+    <ClInclude Include="dxgl\include\GL\wglext.h" />
+    <ClInclude Include="dxgl\include\winedef.h" />
+    <ClInclude Include="dxgl\matrix.h" />
+    <ClInclude Include="dxgl\minhook\buffer.h" />
+    <ClInclude Include="dxgl\minhook\HDE\hde32.h" />
+    <ClInclude Include="dxgl\minhook\HDE\hde64.h" />
+    <ClInclude Include="dxgl\minhook\HDE\pstdint.h" />
+    <ClInclude Include="dxgl\minhook\HDE\table32.h" />
+    <ClInclude Include="dxgl\minhook\HDE\table64.h" />
+    <ClInclude Include="dxgl\minhook\MinHook.h" />
+    <ClInclude Include="dxgl\minhook\trampoline.h" />
+    <ClInclude Include="dxgl\resource.h" />
+    <ClInclude Include="dxgl\scalers.h" />
+    <ClInclude Include="dxgl\ShaderGen2D.h" />
+    <ClInclude Include="dxgl\ShaderGen3D.h" />
+    <ClInclude Include="dxgl\ShaderManager.h" />
+    <ClInclude Include="dxgl\string.h" />
+    <ClInclude Include="dxgl\struct.h" />
+    <ClInclude Include="dxgl\struct_command.h" />
+    <ClInclude Include="dxgl\timer.h" />
+    <ClInclude Include="dxgl\trace.h" />
+    <ClInclude Include="dxgl\util.h" />
+    <ClInclude Include="fast_mutex.h" />
+    <ClInclude Include="hardwarebp.h" />
+    <ClInclude Include="ini.h" />
+    <ClInclude Include="Marni.h" />
+    <ClInclude Include="MarniPrim.h" />
+    <ClInclude Include="MarniSurface.h" />
+    <ClInclude Include="MarniTest.h" />
+    <ClInclude Include="MarniUtil.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cfgmgr\cfgmgr.c" />
+    <ClCompile Include="cfgmgr\crc32.c" />
+    <ClCompile Include="cfgmgr\LibSha256.c" />
+    <ClCompile Include="Config.cpp" />
+    <ClCompile Include="debug_new.cpp" />
+    <ClCompile Include="dxgl\BufferObject.cpp" />
+    <ClCompile Include="dxgl\const.c" />
+    <ClCompile Include="dxgl\dxgl.cpp" />
+    <ClCompile Include="dxgl\dxgldraw.cpp" />
+    <ClCompile Include="dxgl\dxguid.c" />
+    <ClCompile Include="dxgl\glClassFactory.cpp" />
+    <ClCompile Include="dxgl\glDirect3D.cpp" />
+    <ClCompile Include="dxgl\glDirect3DDevice.cpp" />
+    <ClCompile Include="dxgl\glDirect3DExecuteBuffer.cpp" />
+    <ClCompile Include="dxgl\glDirect3DLight.cpp" />
+    <ClCompile Include="dxgl\glDirect3DMaterial.cpp" />
+    <ClCompile Include="dxgl\glDirect3DTexture.cpp" />
+    <ClCompile Include="dxgl\glDirect3DVertexBuffer.cpp" />
+    <ClCompile Include="dxgl\glDirect3DViewport.cpp" />
+    <ClCompile Include="dxgl\glDirectDraw.cpp" />
+    <ClCompile Include="dxgl\glDirectDrawClipper.cpp" />
+    <ClCompile Include="dxgl\glDirectDrawGammaControl.cpp" />
+    <ClCompile Include="dxgl\glDirectDrawPalette.c" />
+    <ClCompile Include="dxgl\glDirectDrawSurface.cpp" />
+    <ClCompile Include="dxgl\glExtensions.c" />
+    <ClCompile Include="dxgl\glRenderer.cpp" />
+    <ClCompile Include="dxgl\glRenderWindow.cpp" />
+    <ClCompile Include="dxgl\glTexture.cpp" />
+    <ClCompile Include="dxgl\glUtil.cpp" />
+    <ClCompile Include="dxgl\hooks.c" />
+    <ClCompile Include="dxgl\matrix.c" />
+    <ClCompile Include="dxgl\minhook\buffer.c" />
+    <ClCompile Include="dxgl\minhook\HDE\hde32.c" />
+    <ClCompile Include="dxgl\minhook\HDE\hde64.c" />
+    <ClCompile Include="dxgl\minhook\hook.c" />
+    <ClCompile Include="dxgl\minhook\trampoline.c" />
+    <ClCompile Include="dxgl\precomp.cpp" />
+    <ClCompile Include="dxgl\scalers.c" />
+    <ClCompile Include="dxgl\ShaderGen2D.cpp" />
+    <ClCompile Include="dxgl\ShaderGen3D.cpp" />
+    <ClCompile Include="dxgl\ShaderManager.cpp" />
+    <ClCompile Include="dxgl\string.c" />
+    <ClCompile Include="dxgl\timer.c" />
+    <ClCompile Include="dxgl\trace.c" />
+    <ClCompile Include="dxgl\util.c" />
+    <ClCompile Include="hardwarebp.cpp" />
+    <ClCompile Include="ini.cpp" />
+    <ClCompile Include="Marni.cpp" />
+    <ClCompile Include="MarniPrim.cpp" />
+    <ClCompile Include="MarniSurface.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MarniUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MarniTest.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="MarniTest.ico" />
+    <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dxgl\include\d3dvec.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
