@@ -316,9 +316,7 @@ int CreateDevice(int enumerate, LPDIRECTDRAW *pDirectDraw, DWORD *a3)
 
 int QueryInterface(IDirectDraw *pDD, LPDIRECTDRAW *lpDD)
 {
-	GUID guid = { 0xB3A6F3E0, 0x2B43, 0x11CF, 0xA2, 0xDE, 0, 0xAA, 0, 0xB9, 0x33, 0x56 };
-
-	return pDD->QueryInterface(guid, (LPVOID *)lpDD);
+	return pDD->QueryInterface(IID_IDirectDraw2, (LPVOID *)lpDD);
 }
 
 int InvalidateWindow(HWND hWnd, int Width, int Height, int Is_fullscreen, RECT *lprc)
@@ -422,8 +420,8 @@ void Marni1Out(char *fmt, ...)
 	char buffer[2048];
 
 	va_start(myargs, fmt);
-	vsprintf(buffer, fmt, myargs);
-	strcat(buffer, "\n");
+	vsprintf_s(buffer, sizeof(buffer), fmt, myargs);
+	strcat_s(buffer, sizeof(buffer), "\n");
 	OutputDebugString(buffer);
 	va_end(myargs);
 }
@@ -432,7 +430,7 @@ void Marni2Out(char *text, char *caption)
 {
 	char buffer[2048];
 
-	sprintf(buffer, "[%s] %s\n", caption, text);
+	sprintf_s(buffer, sizeof(buffer), "[%s] %s\n", caption, text);
 	OutputDebugString(buffer);
 }
 
@@ -488,4 +486,63 @@ DWORD upper_power_of_two(DWORD w, DWORD h)
 	v |= v >> 16;
 	v++;
 	return v;
+}
+
+extern CMarni *pMarni;
+static int Max_resolutions,
+	Is_fullscreen,
+	Is_now_fullscreen,
+	Display_mode,
+	Display_cursor,
+	Res_switched;
+
+typedef struct tagResolution
+{
+	MARNI_RES res;
+	int mode;
+} RES;
+
+static RES resolutions[64];
+
+void SetDisplayRect()
+{
+	if (!pMarni)
+		return;
+
+	for (int i = 0, si = pMarni->RequestDisplayModeCount(); i < si; i++)
+	{
+
+		MARNI_RES res;
+		pMarni->RequestDisplayRect(i, &res);
+		memcpy(&resolutions[i].res, &res, sizeof(MARNI_RES));
+	}
+}
+
+int SwitchResolution(int index)
+{
+	if (index >= Max_resolutions)
+		return 0;
+
+	if (!pMarni->ChangeMode(resolutions[index].mode))
+		return 0;
+
+	int Is_fullscreen = resolutions[index].res.Fullscreen;
+	Display_mode = index;
+	Is_now_fullscreen = Is_fullscreen;
+	if (Is_fullscreen)
+	{
+		if (!Display_cursor)
+			ShowCursor(FALSE);
+		Display_cursor = 0;
+	}
+	else
+	{
+		if (!Display_cursor)
+			ShowCursor(TRUE);
+		Display_cursor = 1;
+	}
+	// there should be a call to Move_movie_window() here
+
+	Res_switched = 1;
+	return 1;
 }

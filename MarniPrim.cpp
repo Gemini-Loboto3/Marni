@@ -1,16 +1,6 @@
 #include "stdafx.h"
 #include "MarniPrim.h"
 
-
-CMarniPrim::CMarniPrim()
-{
-}
-
-
-CMarniPrim::~CMarniPrim()
-{
-}
-
 CMarniPAlloc::CMarniPAlloc()
 {
 	Init(4096);
@@ -18,7 +8,11 @@ CMarniPAlloc::CMarniPAlloc()
 
 CMarniPAlloc::~CMarniPAlloc()
 {
-	delete[] this->pData;
+	if (this->pData)
+	{
+		delete[] this->pData;
+		this->pData = NULL;
+	}
 }
 
 void CMarniPAlloc::Init(int size)

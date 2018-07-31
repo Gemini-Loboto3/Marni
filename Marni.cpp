@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Marni.h"
 #include "debug_new.h"
+#include <assert.h>
 
 typedef struct tagMarniDevice
 {
@@ -102,8 +103,34 @@ int CMarni::RequestVideoMemory()
 	return 0;
 }
 
-int CMarni::ChangeMode(int display_mode) { return 1; }
-int CMarni::ChangeResolution(int display_mode) { return 1; }
+int CMarni::ChangeMode(int display_mode)
+{
+	if (display_mode >= this->Resolution_count)
+		return 0;
+
+	int old = this->display_mode;
+	MARNI_RES *pRes = &this->Resolutions[display_mode];
+	this->Is_fullscreen = pRes->Fullscreen;
+	this->display_mode = display_mode;
+	if (!this->ChangeResolution(pRes->W, pRes->H, pRes->Depth))
+	{
+		// failed, revert back
+		this->display_mode = old;
+		return 0;
+	}
+
+	this->field_308 = 0;
+	return 1;
+}
+
+int CMarni::ChangeResolution(int display_mode)
+{
+	this->DeviceID = display_mode & DeviceId;
+	this->ChangeResolution(this->XSize, this->YSize, this->BitDepth);
+
+	return 1;
+}
+
 //int CMarni::Clear(DWORD *a2, int a3, int a4, int a5) { return 1; }
 int CMarni::Render()
 {
@@ -311,6 +338,103 @@ int CMarni::InitPrims()
 
 ////////////////////////////////////////
 // REGULAR METHODS
+int CMarni::ChangeResolution(int Width, int Height, int BitsPerPixel)
+{
+	if (!this->Is_active)
+		return 0;
+	this->Is_active = 0;
+	if (this->card == GFX_SOFTWARE)
+	{
+		this->Aspect_x = 1.0;
+		this->Aspect_y = 1.0;
+	}
+	else
+	{
+		this->Aspect_x = (float)Width / (float)this->Render_w;
+		this->Aspect_y = (float)Height / (float)this->Render_h;
+	}
+	// copy for quick recover
+	this->ScreenX_old = this->XSize;
+	this->ScreenY_old = this->YSize;
+	this->Is_fullscreen_old = this->Is_fullscreen;
+	this->BitDepth_old = this->BitDepth;
+	// assign new sizes
+	this->XSize = Width;
+	this->YSize = Height;
+	this->BitDepth = BitsPerPixel;
+	this->ClearBuffers();
+	// check if this initializes fine
+	if (!this->InitAll())
+	{
+		// failed, try to fall back to previous mode
+		this->XSize = this->ScreenX_old;
+		this->YSize = this->ScreenY_old;
+		this->BitDepth = this->BitDepth_old;
+		this->ClearBuffers();
+		if (!this->InitAll())
+		{
+			// can't go back, oops
+			this->ClearBuffers();
+			return 0;
+		}
+	}
+
+	if (this->ReloadTexture())
+	{
+		this->Is_active = 1;
+		return 1;
+	}
+
+	// couldn't load textures in this resolution, fall back to previous
+	this->XSize = this->ScreenX_old;
+	this->YSize = this->ScreenY_old;
+	this->BitDepth = this->BitDepth_old;
+	this->ClearBuffers();
+	if (!this->InitAll())
+	{
+		// can't go back, oops
+		this->ClearBuffers();
+		return 0;
+	}
+
+	if (this->ReloadTexture())
+	{
+		// recovered successfully
+		this->Is_active = 1;
+		return 1;
+	}
+
+	// we're fucked pretty badly
+	this->ClearBuffers();
+	return 0;
+}
+
+void CMarni::Clear()
+{
+	this->ClearBuffers();
+	delete[] this->pPtr_2KBuffer;
+	this->pPtr_2KBuffer = NULL;
+	if (this->Is_fullscreen && this->pDirectDraw)
+	{
+		this->Is_busy_ = 1;
+		this->pDirectDraw->RestoreDisplayMode();
+		this->Is_busy_ = 0;
+	}
+
+	if (this->pZBuffer_)
+	{
+		this->pZBuffer_->Release();
+		this->pZBuffer_ = NULL;
+	}
+	if (this->pDirectDraw)
+	{
+		this->pDirectDraw->Release();
+		this->pDirectDraw = NULL;
+	}
+	delete[] this->pTexture_buffer;
+	this->pTexture_buffer = NULL;
+}
+
 void CMarni::ClientToScreen()
 {
 	POINT p0, p1;
@@ -677,7 +801,7 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 
 		static DWORD someshit;
 		CreateDevice(enumerate, &this->pDirectDraw, &someshit/*(DWORD*)&pExe[0x7e0e18 - 0x400000]*/);
-		QueryInterface(this->pDirectDraw, &this->g_pDD);
+		//QueryInterface(this->pDirectDraw, &this->g_pDD);
 		DDCAPS caps;
 		caps.dwSize = sizeof(caps);
 		this->pDirectDraw->GetCaps(&caps, NULL);
@@ -777,7 +901,6 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 
 			// creates the first texture surface
 			CMarni216 *p216 = new CMarni216;
-			//p216->Surface.constructor();
 			this->pSurfaces[0] = p216;
 			p216->pSurfEx = NULL;
 			p216->field_D0 = 1;
@@ -933,7 +1056,7 @@ int CMarni::InitAll()
 				this->MarniBits1.DDsurface = NULL;
 			}
 			// tries to create a z-buffer
-			LPDIRECTDRAWSURFACE srf;
+			LPDIRECTDRAWSURFACE srf = NULL;
 			if (!this->MD3DCreateZBuffer(this->XSize, this->YSize, &srf))
 				throw 0;
 
@@ -1446,6 +1569,7 @@ int CMarni::MD3DCreateZBuffer(int Width, int Height, LPDIRECTDRAWSURFACE *ppSurf
 			throw 0;
 		}
 
+		assert(*ppSurface == NULL);
 		if (this->pDirectDraw->CreateSurface(&dsdesc, ppSurface, NULL))
 			throw 0;
 
@@ -1469,6 +1593,26 @@ int CMarni::MD3DCreateZBuffer(int Width, int Height, LPDIRECTDRAWSURFACE *ppSurf
 
 	return 1;
 }
+
+int CMarni::RequestDisplayRect(int id, MARNI_RES *res)
+{
+	if (!this->Is_gpu_init)
+		return 0;
+	if (id >= this->Resolution_count)
+		return 0;
+
+	memcpy32(res, &this->Resolutions[id], sizeof(MARNI_RES) / 4);
+	return 1;
+}
+
+int CMarni::RequestDisplayModeCount()
+{
+	if (this->Is_gpu_init)
+		return this->Resolution_count;
+
+	return 0;
+}
+
 int CMarni::createDevice()
 {
 	void **v1 = (void**)&this->pD3DDevice;

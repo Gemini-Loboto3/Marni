@@ -1009,5 +1009,10 @@ public:
 	void Vmem_stats();
 
 	int RestoreLostSurface();
+	void Clear();
+
+	int RequestDisplayRect(int id, MARNI_RES *res);
+	int RequestDisplayModeCount();
+	int CMarni::ChangeResolution(int dwWidth, int dwHeight, int dwBPP);
 };
 

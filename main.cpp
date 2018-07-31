@@ -11,7 +11,8 @@
 #include "debug_new.h"
 
 #define newclear(TYPE)		new(calloc(sizeof(TYPE), 1)) TYPE();
-#define delclear(p,TYPE)	delete(free(p)) ~TYPE()
+
+static void Exit();
 
 //CMarni *pMarni = NULL;
 
@@ -55,9 +56,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	// create a zeroed object
 	void *pool = calloc(sizeof(CMarni), 1);
-	pMarni = new(pool) CMarni();
+	CMarni *ppMarni = new(pool) CMarni();
 	// initialize crap
-	pMarni->Init(hWnd, 320, 240, 0, 1);
+	ppMarni->Init(hWnd, 320, 240, 0, 1);
+	pMarni = ppMarni;
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MARNITEST));
 
@@ -67,24 +69,28 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	DWORD time_init = timeGetTime();
     // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (1)
     {
+		PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
+		if (msg.message == WM_QUIT)
+		{
+			DestroyWindow(hWnd);
+			break;
+		}
+
 		DWORD time_now = timeGetTime();
 		if (time_now - time_init >= 1000)
 		{
 			time_init = time_now;
-			pMarni->ClearBg();
+			if(pMarni)
+				pMarni->ClearBg();
 		}
 
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		TranslateMessage(&msg);
+		if (msg.message == WM_SYSCOMMAND && msg.wParam == SC_CLOSE)
+			Exit();
+		DispatchMessage(&msg);
     }
-
-	pMarni->~CMarni();
-	free(pool);
 
     return (int) msg.wParam;
 }
@@ -102,7 +108,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.style          = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc    = WndProc;
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
@@ -131,8 +137,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   hWnd = CreateWindowExA(0,szWindowClass, szTitle,
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0,
+		CW_USEDEFAULT, 0,
+	   nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -143,6 +152,23 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    UpdateWindow(hWnd);
 
    return TRUE;
+}
+
+void Exit()
+{
+	static int Exited = 0;
+
+	if (!Exited)
+	{
+		Exited = 1;
+		if (pMarni)
+		{
+			pMarni->Clear();
+			pMarni->~CMarni();
+			free(pMarni);
+		}
+		pMarni = NULL;
+	}
 }
 
 //
@@ -169,38 +195,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+			//HBRUSH brush = CreateSolidBrush(0x808080);
+			//RECT rc;
+			//SetRect(&rc, 0, 0, 320, 240);
+			//FillRect(hdc, &rc, brush);
+			//DeleteObject(brush);
             // TODO: Add any drawing code that uses hdc here...
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
+		Exit();
+		hWnd = nullptr;
         PostQuitMessage(0);
         break;
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_F7:
+			break;
+		case VK_F8:
+			break;
+		}
+		break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
+}
+
+int Switch_resolution(int mode)
+{
+	if (!pMarni->ChangeMode(0))
+		return 0;
 }
 
 // Message handler for about box.

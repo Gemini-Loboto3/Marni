@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MarniSurface.h"
 #include "debug_new.h"
+#include <assert.h>
 
 //////////////////////////////////////////
 // SOFTWARE SURFACES					//
@@ -14,6 +15,7 @@ CMarniSurface2::CMarniSurface2()
 CMarniSurface2::~CMarniSurface2()
 {
 	Release();
+	//ClassReset(this, pData);
 }
 
 CMarniSurface2* CMarniSurface2::constructor()
@@ -147,10 +149,27 @@ int CMarniSurface2::Release()
 	{
 		delete[] this->pData;
 		delete[] this->pPalette;
+		this->pData = NULL;
+		this->pPalette = NULL;
 	}
 
-	//memset(this, 0, sizeof(*this));
-	ClassReset(this, pData);
+	this->pPalette = 0;
+	this->pData = 0;
+	this->field_C = 0;
+	memset(&this->sdesc, 0, sizeof(this->sdesc));
+	this->sdesc.Pal_index = 0;
+	this->sdesc.bpp = 0;
+	this->sdesc.dwRGBBitCount = 0;
+	this->lPitch = 0;
+	this->dwHeight = 0;
+	this->dwWidth = 0;
+	this->field_50 = 0;
+	this->Has_palette = 0;
+	this->field_44 = 0;
+	this->Is_open = 0;
+	this->field_4C = 0;
+	this->field_3C = 0;
+	this->field_38 = 0;
 
 	return 1;
 }
@@ -287,6 +306,8 @@ int CMarniSurface2::CreateWork(int width, int height, int bmp_depth, int srf_dep
 	this->dwHeight = height;
 	this->sdesc.dwRGBBitCount = bmp_depth;
 
+	assert(this->pData == NULL);
+
 	switch (bmp_depth)
 	{
 	case 4:
@@ -332,6 +353,7 @@ int CMarniSurface2::CreateWork(int width, int height, int bmp_depth, int srf_dep
 			return 0;
 		}
 
+		assert(this->pPalette == NULL);
 		this->pPalette = new u8[size];
 		if(!this->pPalette)
 		{
@@ -665,6 +687,7 @@ int CMarniSurface::Lock(u8 **ppBitmap, u8 **ppPalette)
 	{
 		PALETTEENTRY palette[256];
 		size_t size = 1 << this->sdesc.dwRGBBitCount;
+		assert(this->pPalette == NULL);
 		this->pPalette = new u8[4 * size];
 		if (this->DDpalette->GetEntries(0, 0, size, palette))
 			return 0;
@@ -739,7 +762,7 @@ int CMarniSurface::Release()
 		if (this->DDpalette)
 		{
 			this->DDpalette->Release();
-			this->DDpalette = 0;
+			this->DDpalette = NULL;
 		}
 	}
 
@@ -797,6 +820,7 @@ int CMarniSurface::CreateCompatibleSurface(IDirectDraw *pDD, DDSURFACEDESC *desc
 
 int CMarniSurface::DirectDrawSurface(IDirectDraw *pDD, DDSURFACEDESC *pDesc)
 {
+	assert(this->DDsurface == NULL);
 	DDSURFACEDESC dsdesc0, dsdesc1;
 
 	// pad size to a power of 2
