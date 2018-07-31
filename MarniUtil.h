@@ -143,3 +143,10 @@ void Marni1Out(char *fmt, ...);
 void Marni2Out(char *text, char *caption);
 int Adjust_rect(RECT *lpRect, int *adjust, RECT *lpRect1);
 DWORD upper_power_of_two(DWORD w, DWORD h);
+
+void SetDisplayRect();
+int SwitchResolution(int index);
+int IsGpuActive();
+
+extern int Max_resolutions,
+	Display_mode;

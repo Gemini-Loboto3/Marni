@@ -18,6 +18,7 @@ static void Exit();
 
 CConfig config;
 CMarni *pMarni = NULL;
+DWORD time_init;
 
 #define MAX_LOADSTRING 100
 
@@ -61,13 +62,15 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 	ppMarni->Init(hWnd, 320, 240, 0, 1);
 	pMarni = ppMarni;
 
+	SetDisplayRect();
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MARNITEST));
 
     MSG msg;
 
 	pMarni->ClearBG_ = 1;
 
-	DWORD time_init = timeGetTime();
+	time_init = timeGetTime();
     // Main message loop:
     while (1)
     {
@@ -78,12 +81,14 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 			break;
 		}
 
-		DWORD time_now = timeGetTime();
-		if (time_now - time_init >= 1000)
+		if (IsGpuActive())
 		{
-			time_init = time_now;
-			if(pMarni)
+			DWORD time_now = timeGetTime();
+			if (time_now - time_init >= 1000)
+			{
+				time_init = time_now;
 				pMarni->ClearBg();
+			}
 		}
 
 		TranslateMessage(&msg);
@@ -138,7 +143,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindowExA(0,szWindowClass, szTitle,
-		WS_OVERLAPPEDWINDOW,
+		WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME),
 		CW_USEDEFAULT, 0,
 		CW_USEDEFAULT, 0,
 	   nullptr, nullptr, hInstance, nullptr);
@@ -149,7 +154,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+   //UpdateWindow(hWnd);
 
    return TRUE;
 }
@@ -199,12 +204,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-			//HBRUSH brush = CreateSolidBrush(0x808080);
-			//RECT rc;
-			//SetRect(&rc, 0, 0, 320, 240);
-			//FillRect(hdc, &rc, brush);
-			//DeleteObject(brush);
-            // TODO: Add any drawing code that uses hdc here...
+#if 1
+			HBRUSH brush = CreateSolidBrush(0x808080);
+			RECT rc;
+			SetRect(&rc, 0, 0, 320, 240);
+			FillRect(hdc, &rc, brush);
+			DeleteObject(brush);
+#endif
             EndPaint(hWnd, &ps);
         }
         break;
@@ -217,8 +223,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_F7:
+			{
+				DWORD timer = timeGetTime();
+				if (time_init + 10000 > timer)
+				{
+					Display_mode--;
+					if (Display_mode < 0)
+						Display_mode = Max_resolutions - 1;
+					SwitchResolution(Display_mode);
+				}
+			}
 			break;
 		case VK_F8:
+			{
+				DWORD timer = timeGetTime();
+				if (time_init + 10000 > timer)
+				{
+					Display_mode++;
+					if (Display_mode >= Max_resolutions)
+						Display_mode = 0;
+					SwitchResolution(Display_mode);
+				}
+			}
 			break;
 		}
 		break;
@@ -226,12 +252,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
-}
-
-int Switch_resolution(int mode)
-{
-	if (!pMarni->ChangeMode(0))
-		return 0;
 }
 
 // Message handler for about box.

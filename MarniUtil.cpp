@@ -489,12 +489,13 @@ DWORD upper_power_of_two(DWORD w, DWORD h)
 }
 
 extern CMarni *pMarni;
-static int Max_resolutions,
-	Is_fullscreen,
+extern HWND hWnd;
+static int Is_fullscreen,
 	Is_now_fullscreen,
-	Display_mode,
 	Display_cursor,
 	Res_switched;
+int Max_resolutions,
+	Display_mode;
 
 typedef struct tagResolution
 {
@@ -509,12 +510,14 @@ void SetDisplayRect()
 	if (!pMarni)
 		return;
 
-	for (int i = 0, si = pMarni->RequestDisplayModeCount(); i < si; i++)
+	Max_resolutions = pMarni->RequestDisplayModeCount();
+	for (int i = 0, si = Max_resolutions; i < si; i++)
 	{
 
 		MARNI_RES res;
 		pMarni->RequestDisplayRect(i, &res);
 		memcpy(&resolutions[i].res, &res, sizeof(MARNI_RES));
+		resolutions[i].mode = i;	// kinda redundant
 	}
 }
 
@@ -544,5 +547,25 @@ int SwitchResolution(int index)
 	// there should be a call to Move_movie_window() here
 
 	Res_switched = 1;
+	return 1;
+}
+
+int IsGpuActive()
+{
+	if (pMarni)
+	{
+		if (!pMarni->Is_gpu_init)
+		{
+			Marni2Out("win is sleeping...", __FILE__);
+			return 0;
+		}
+	}
+	else if (hWnd)
+	{
+		// marni is not created but window is
+		Marni2Out("win whatever", __FILE__);
+		return 0;
+	}
+
 	return 1;
 }
