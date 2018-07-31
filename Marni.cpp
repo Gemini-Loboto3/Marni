@@ -26,8 +26,28 @@ CMarni::CMarni()
 
 CMarni::~CMarni()
 {
+	this->ClearBuffers();
 	delete[] this->pPtr_2KBuffer;
-	this->pPtr_2KBuffer = 0;
+	this->pPtr_2KBuffer = NULL;
+	if (this->Is_fullscreen && this->pDirectDraw)
+	{
+		this->Is_busy_ = 1;
+		this->pDirectDraw->RestoreDisplayMode();
+		this->Is_busy_ = 0;
+	}
+
+	if (this->pZBuffer_)
+	{
+		this->pZBuffer_->Release();
+		this->pZBuffer_ = NULL;
+	}
+	if (this->pDirectDraw)
+	{
+		this->pDirectDraw->Release();
+		this->pDirectDraw = NULL;
+	}
+	delete[] this->pTexture_buffer;
+	this->pTexture_buffer = NULL;
 }
 
 ////////////////////////////////////////
@@ -205,7 +225,7 @@ int CMarni::CreateTexture(CMarniSurface *pSrf, DWORD *a3, DWORD *a4)
 	if (!this->Is_gpu_init)
 		return 0;
 
-	if (pSrf->dwWidth > 256 || pSrf->dwHeight)
+	if (pSrf->dwWidth > 256 || pSrf->dwHeight > 256)
 		return 0;
 
 	int index = 1;
@@ -264,7 +284,6 @@ int CMarni::CreateTexture(CMarniSurface *pSrf, DWORD *a3, DWORD *a4)
 	// software mode
 	else
 	{
-		DWORD dwCount;
 		if (pSrf->Has_palette)
 		{
 		}
@@ -272,7 +291,7 @@ int CMarni::CreateTexture(CMarniSurface *pSrf, DWORD *a3, DWORD *a4)
 		{
 		}
 
-		if (pSrf->sdesc.dwRGBBitCount == dwCount && *a3 & 2 && this->Use_VRAM)
+		if (pSrf->sdesc.dwRGBBitCount == this->MarniBitsDst.sdesc.dwRGBBitCount && *a3 & 2 && this->Use_VRAM)
 		{
 			CMarniSurface *pS = new CMarniSurface;
 			pObj->pSurfEx = (CMarniSurfaceEx*)pS;
@@ -324,8 +343,15 @@ int CMarni::Release(int type)
 
 	return 1;
 }
-int CMarni::ClearBuffer(int type) { return 1; }
-int CMarni::Draw(DWORD *pPoly, int otz) { return 1; }
+int CMarni::ClearBuffer(int type)
+{
+	if (this->pPtr_2KBuffer[type])
+		delete this->pPtr_2KBuffer[type];
+	this->pPtr_2KBuffer[type] = NULL;
+
+	return 1;
+}
+int CMarni::LinkPoly(DWORD *pPoly, int otz) { return 1; }
 int CMarni::InitPrims()
 {
 	this->OTag0.InitOTag();
@@ -411,28 +437,6 @@ int CMarni::ChangeResolution(int Width, int Height, int BitsPerPixel)
 
 void CMarni::Clear()
 {
-	this->ClearBuffers();
-	delete[] this->pPtr_2KBuffer;
-	this->pPtr_2KBuffer = NULL;
-	if (this->Is_fullscreen && this->pDirectDraw)
-	{
-		this->Is_busy_ = 1;
-		this->pDirectDraw->RestoreDisplayMode();
-		this->Is_busy_ = 0;
-	}
-
-	if (this->pZBuffer_)
-	{
-		this->pZBuffer_->Release();
-		this->pZBuffer_ = NULL;
-	}
-	if (this->pDirectDraw)
-	{
-		this->pDirectDraw->Release();
-		this->pDirectDraw = NULL;
-	}
-	delete[] this->pTexture_buffer;
-	this->pTexture_buffer = NULL;
 }
 
 void CMarni::ClientToScreen()
@@ -686,6 +690,8 @@ void CMarni::ClearBuffers()
 	this->MarniBitsDst.Release();
 }
 
+static int double_call = 0;
+
 CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, int display_driver)
 {
 	int enumerate;
@@ -708,15 +714,15 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 		}
 		// the original code here would go fullscreen for other cards, fuck that
 
-		//if (GETDWORD(0x8E1C38))
-		//{
-		//	Marni2Out("Can't call this twice", "MarniSystem Direct3D Class");
-		//	exit(2);
-		//}
-		//GETDWORD(0x8E1C38)++;
+		if (double_call)
+		{
+			Marni2Out("Can't call this twice", "MarniSystem Direct3D Class");
+			exit(2);
+		}
+		double_call++;
 
 		this->cnt_pPtr_2K = 512;
-		this->pPtr_2KBuffer = new int[512];
+		this->pPtr_2KBuffer = new int*[512];
 
 		LoadIdentity(&this->Matrix0);
 		LoadIdentity(&this->Matrix1);
@@ -1429,13 +1435,13 @@ int CMarni::ReloadTexture(int index)
 
 	return 1;
 }
+
 int CMarni::ReloadTexture0(DWORD dwFlags)
 {
 	try
 	{
 		bool found = false;
 		CMarniSurfaceEx surf;
-		surf.constructor();
 
 		// search for a surface description that matches
 		CMarni216 *p;

@@ -913,13 +913,6 @@ CMarniSurfaceEx::~CMarniSurfaceEx()
 	Release();
 }
 
-CMarniSurfaceEx* CMarniSurfaceEx::constructor()
-{
-	//memset(this, 0, sizeof(*this));
-	ClassReset(this, pData);
-	return this;
-}
-
 int CMarniSurfaceEx::Release()
 {
 	if (this->DDtexture)

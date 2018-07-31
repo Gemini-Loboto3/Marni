@@ -56,9 +56,10 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
     }
 
 	// create a zeroed object
-	void *pool = calloc(sizeof(CMarni), 1);
-	CMarni *ppMarni = new(pool) CMarni();
+	//void *pool = calloc(sizeof(CMarni), 1);
+	//CMarni *ppMarni = new(pool) CMarni();
 	// initialize crap
+	CMarni *ppMarni = new CMarni();
 	ppMarni->Init(hWnd, 320, 240, 0, 1);
 	pMarni = ppMarni;
 
@@ -143,7 +144,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindowExA(0,szWindowClass, szTitle,
-		WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME),
+	   //WS_CLIPCHILDREN |  WS_POPUP
+	   WS_CAPTION| WS_SYSMENU | WS_GROUP,//WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME),
 		CW_USEDEFAULT, 0,
 		CW_USEDEFAULT, 0,
 	   nullptr, nullptr, hInstance, nullptr);
@@ -168,9 +170,10 @@ void Exit()
 		Exited = 1;
 		if (pMarni)
 		{
-			pMarni->Clear();
-			pMarni->~CMarni();
-			free(pMarni);
+			delete pMarni;
+			//pMarni->Clear();
+			//pMarni->~CMarni();
+			//free(pMarni);
 		}
 		pMarni = NULL;
 	}

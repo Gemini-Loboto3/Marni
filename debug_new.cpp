@@ -488,7 +488,8 @@ static void* alloc_mem(size_t size, const char* file, int line, bool is_array)
 				  Alignment_must_be_power_of_two);
 	STATIC_ASSERT(_DEBUG_NEW_TAILCHECK >= 0, Invalid_tail_check_length);
 	size_t s = size + ALIGNED_LIST_ITEM_SIZE + _DEBUG_NEW_TAILCHECK;
-	new_ptr_list_t* ptr = (new_ptr_list_t*)malloc(s);
+	//new_ptr_list_t* ptr = (new_ptr_list_t*)malloc(s);
+	new_ptr_list_t* ptr = (new_ptr_list_t*)calloc(s,1);
 	if (ptr == NULL)
 	{
 #if _DEBUG_NEW_STD_OPER_NEW

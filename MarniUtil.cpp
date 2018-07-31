@@ -328,8 +328,8 @@ int InvalidateWindow(HWND hWnd, int Width, int Height, int Is_fullscreen, RECT *
 	// change size and position depending on current window style
 	AdjustWindowRectEx(&rc, GetWindowLongA(hWnd, GWL_STYLE), GetMenu(hWnd) ? 1 : 0, GetWindowLongA(hWnd, GWL_EXSTYLE));
 	// move the window
-	SetWindowPos(hWnd, (HWND)HWND_TOP,       0, 0, rc.right - rc.left, rc.bottom - rc.top, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
-	SetWindowPos(hWnd, (HWND)HWND_NOTOPMOST, 0, 0, 0,                  0,                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+	SetWindowPos(hWnd, HWND_TOP,       0, 0, rc.right - rc.left, rc.bottom - rc.top, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
+	SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0,                  0,                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 	
 	if (lprc)
 	{

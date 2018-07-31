@@ -36,7 +36,7 @@ public:
 	virtual int CreateObject(DWORD *a2, DWORD a3);
 	virtual int Release(int type);
 	virtual int ClearBuffer(int type);
-	virtual int Draw(DWORD *pPoly, int otz);
+	virtual int LinkPoly(DWORD *pPoly, int otz);
 	virtual int InitPrims();
 
 	HWND hWnd;
@@ -68,7 +68,7 @@ public:
 	int field_6C;
 	int Is_busy_;
 	int Is_active;
-	DWORD field_78[21];
+	CMarniSurface2 Surface;
 	int field_CC;
 	int Desktop_w;
 	int Desktop_h;
@@ -353,7 +353,7 @@ public:
 	int field_8D4;
 	int field_8D8;
 	int field_8DC;
-	int *pPtr_2KBuffer;
+	int **pPtr_2KBuffer;
 	int cnt_pPtr_2K;
 	int field_8E8;
 	int field_8EC;
