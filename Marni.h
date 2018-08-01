@@ -983,21 +983,18 @@ public:
 
 	void GetZDepthCaps();
 
-	UINT message_loop(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-	void wm_move();
+	// texture operations
 	int  Test_textures();
+	int  ReloadTexture();
+	int  ReloadTexture(int index);
+	int  ReloadTexture0(DWORD dwFlags);
 
-	int ReloadTexture();
-	int ReloadTexture(int index);
-	int ReloadTexture0(DWORD dwFlags);
+	int  DetectGpuDriver();
+	int  MD3DCreateDirect3D();
+	int  MD3DCreateZBuffer(int Width, int Height, LPDIRECTDRAWSURFACE *a4);
+	int  createDevice();
 
-	int DetectGpuDriver();
-	int MD3DCreateDirect3D();
-	int MD3DCreateZBuffer(int Width, int Height, LPDIRECTDRAWSURFACE *a4);
-	int createDevice();
-
-	//int RequestVideoMemory();
-	int SearchMatchTextureFormat(CMarniSurface2 *pSurface, DDSURFACEDESC *pDesc);
+	int  SearchMatchTextureFormat(CMarniSurface2 *pSurface, DDSURFACEDESC *pDesc);
 
 	//
 	void ClientToScreen();
@@ -1009,7 +1006,7 @@ public:
 	void Vmem_stats();
 
 	int RestoreLostSurface();
-	void Clear();
+	//void Clear();
 
 	int RequestDisplayRect(int id, MARNI_RES *res);
 	int RequestDisplayModeCount();

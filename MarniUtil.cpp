@@ -348,12 +348,6 @@ int InvalidateWindow(HWND hWnd, int Width, int Height, int Is_fullscreen, RECT *
 	return 1;
 }
 
-CMarniSurface* CMarniSurface::constructor()
-{
-	//__asm { jmp[calls.surface_constructor] };
-	return NULL;
-}
-
 int GetSurfaceDesc(DDSURFACEDESC *dsdesc, LPDIRECTDRAWSURFACE a2)
 {
 	memset(dsdesc, 0, sizeof(DDSURFACEDESC));
@@ -440,7 +434,6 @@ int Adjust_rect(RECT *lpRect, int *adjust, RECT *lpRect1)
 	int bottom; // edx
 	int left; // edi
 	LONG top; // ebx
-	int v7; // eax
 
 	right = lpRect->right;
 	if (right < *adjust)
@@ -452,10 +445,9 @@ int Adjust_rect(RECT *lpRect, int *adjust, RECT *lpRect1)
 	if (adjust[2] < lpRect->left)
 		return 0;
 	top = lpRect->top;
-	v7 = adjust[3];
-	if (top > v7)
+	if (top > adjust[3])
 		return 0;
-	if (adjust[2] - *adjust <= 0 || v7 - adjust[1] <= 0)
+	if (adjust[2] - *adjust <= 0 || adjust[3] - adjust[1] <= 0)
 		return 0;
 	if (right - left <= 0 || bottom - top <= 0)
 		return 0;
@@ -465,7 +457,7 @@ int Adjust_rect(RECT *lpRect, int *adjust, RECT *lpRect1)
 		top = adjust[1];
 	if (adjust[2] <= right)
 		right = adjust[2];
-	if (v7 <= bottom)
+	if (adjust[3] <= bottom)
 		bottom = adjust[3];
 	lpRect1->left = left;
 	lpRect1->top = top;
@@ -568,4 +560,35 @@ int IsGpuActive()
 	}
 
 	return 1;
+}
+
+#include <vector>
+#include "lodepng.h"
+
+void encodeOneStep(const char* filename, std::vector<u8>& image, u32 width, u32 height)
+{
+	lodepng::encode(filename, image, width, height);
+}
+
+//Example 2
+//Encode from raw pixels to an in-memory PNG file first, then write it to disk
+//The image argument has width * height RGBA pixels or width * height * 4 bytes
+void encodeTwoSteps(const char* filename, std::vector<u8>& image, u32 width, u32 height)
+{
+	std::vector<unsigned char> png;
+
+	lodepng::encode(png, image, width, height);
+	lodepng::save_file(png, filename);
+}
+
+//Example 3
+//Save a PNG file to disk using a State, normally needed for more advanced usage.
+//The image argument has width * height RGBA pixels or width * height * 4 bytes
+void encodeWithState(const char* filename, std::vector<u8>& image, u32 width, u32 height)
+{
+	std::vector<unsigned char> png;
+	lodepng::State state; //optionally customize this one
+
+	lodepng::encode(png, image, width, height, state);
+	lodepng::save_file(png, filename);
 }

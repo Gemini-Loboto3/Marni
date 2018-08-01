@@ -58,7 +58,7 @@ int CMarni::ClearBg()
 		return 0;
 
 	// needs device and viewport for hardware mode
-	if (this->card != 5 && (!this->pD3DDevice || !this->pViewport))
+	if (this->card != GFX_SOFTWARE && (!this->pD3DDevice || !this->pViewport))
 		return 0;
 
 	int flags;
@@ -435,9 +435,9 @@ int CMarni::ChangeResolution(int Width, int Height, int BitsPerPixel)
 	return 0;
 }
 
-void CMarni::Clear()
-{
-}
+//void CMarni::Clear()
+//{
+//}
 
 void CMarni::ClientToScreen()
 {
@@ -910,7 +910,8 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 			this->pSurfaces[0] = p216;
 			p216->pSurfEx = NULL;
 			p216->field_D0 = 1;
-			p216->Surface = this->MarniSrf2;
+			if (!p216->Surface.copy(this->MarniSrf2))
+				throw 0;
 			if (!this->ReloadTexture(0))
 				throw 0;
 		}
@@ -1247,8 +1248,18 @@ LABEL_13:
 	this->ddscapsSize = halcaps.ddsOldCaps.dwCaps;
 }
 
-int  CMarni::Test_textures() {
-	return 1;
+int  CMarni::Test_textures()
+{
+	if (this->ReloadTexture0(0x21))
+		return 1;
+	if (this->ReloadTexture0(0x22))
+		return 1;
+	if (this->ReloadTexture0(0x01))
+		return 1;
+	if (this->ReloadTexture0(0x02))
+		return 1;
+
+	return 0;
 }
 
 void CMarni::Vmem_stats()
@@ -1278,30 +1289,38 @@ void CMarni::Vmem_stats()
 
 int CMarni::ReloadTexture()
 {
-	if (!this->Is_gpu_init)
-		return 0;
-
-	int i = 0;
-	while (1)
+	try
 	{
-		CMarni216 *pSurf = this->pSurfaces[i];
+		if (!this->Is_gpu_init)
+			throw 0;
 
-		if (pSurf)
+		int i = 0;
+		while (1)
 		{
-			pSurf->field_D4 = 0;
-			if (!ReloadTexture(i))
-				break;
+			CMarni216 *pSurf = this->pSurfaces[i];
+
+			if (pSurf)
+			{
+				pSurf->field_D4 = 0;
+				if (!this->ReloadTexture(i))
+					break;
+			}
+			if (++i >= 512)
+			{
+				this->RequestVideoMemory();
+				this->Vmem_stats();
+				return 1;
+			}
 		}
-		if (++i >= 512)
-		{
-			this->RequestVideoMemory();
-			Vmem_stats();
-			return 1;
-		}
+		throw 0;
+	}
+	catch (int)
+	{
+		return 0;
 	}
 
 	// failed to reload
-	return 0;
+	return 1;
 }
 
 int CMarni::ReloadTexture(int index)
@@ -1319,13 +1338,17 @@ int CMarni::ReloadTexture(int index)
 		// not really useful for now
 		if (this->card == GFX_SOFTWARE)
 		{
+			CMarniSurface *pS;
 			if (pSurf->pSurfEx)
-				delete[] pSurf->pSurfEx;
-			CMarniSurface *pS = new CMarniSurface;
+			{
+				pS = pSurf->pSurfEx;
+				delete pS;
+			}
+			pS = new CMarniSurface;
 			pSurf->pSurfEx = (CMarniSurfaceEx*)pS;	// not sure if casting like this will work
 			if (pS->CreateOffscreenSurface(this->pDirectDraw, pSurf->Surface.dwWidth, pSurf->Surface.dwHeight))
 			{
-				delete[] pS;
+				delete pS;
 				pSurf->pSurfEx = NULL;
 				throw 0;
 			}
@@ -1339,6 +1362,7 @@ int CMarni::ReloadTexture(int index)
 				throw 0;
 			if (pSurf->pSurfEx)
 			{
+				delete pSurf->pSurfEx;
 				throw 0;
 			}
 
@@ -1370,7 +1394,7 @@ int CMarni::ReloadTexture(int index)
 						Marni1Out("really can't create this shitty texture");
 						throw 0;
 					}
-					// found a suitable format
+					// found a suitable hardware texture
 					if (pSex->Is_open && pSex->Is_vmem)
 						break;
 				}

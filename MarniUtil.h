@@ -150,3 +150,22 @@ int IsGpuActive();
 
 extern int Max_resolutions,
 	Display_mode;
+
+class CRect : public RECT
+{
+public:
+	__inline void Set(int left, int right, int top, int bottom)
+	{
+		this->left = left;
+		this->right = right;
+		this->top = top;
+		this->bottom = bottom;
+	}
+	__inline void SetXYWH(int x, int y, int w, int h)
+	{
+		SetRect(this, x, y, x + w, y + h);
+	}
+
+	__inline LONG Width() { return right - left; }
+	__inline LONG Height() { return bottom - top; }
+};

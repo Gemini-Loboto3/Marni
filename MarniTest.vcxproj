@@ -200,6 +200,7 @@
     <ClInclude Include="fast_mutex.h" />
     <ClInclude Include="hardwarebp.h" />
     <ClInclude Include="ini.h" />
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="Marni.h" />
     <ClInclude Include="MarniPrim.h" />
     <ClInclude Include="MarniSurface.h" />
@@ -257,6 +258,7 @@
     <ClCompile Include="dxgl\util.c" />
     <ClCompile Include="hardwarebp.cpp" />
     <ClCompile Include="ini.cpp" />
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="Marni.cpp" />
     <ClCompile Include="MarniPrim.cpp" />
     <ClCompile Include="MarniSurface.cpp" />

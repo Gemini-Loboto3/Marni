@@ -2,6 +2,7 @@
 #include "MarniSurface.h"
 #include "debug_new.h"
 #include <assert.h>
+#include "lodepng.h"
 
 //////////////////////////////////////////
 // SOFTWARE SURFACES					//
@@ -30,7 +31,7 @@ int CMarniSurface2::ClearBg(int *adjust, int rgb, int use_image)
 	if (!this->Is_open)
 		return 0;
 
-	RECT rect, dstrect;
+	CRect rect, dstrect;
 	if (adjust)
 	{
 		SetRect(&rect, 0, 0, this->dwWidth - 1, this->dwHeight - 1);
@@ -49,8 +50,8 @@ int CMarniSurface2::ClearBg(int *adjust, int rgb, int use_image)
 
 	if (rgb || use_image)
 	{
-		for (int y = 0, h = dstrect.right - dstrect.left; y < h; y++)
-			for (int x = 0, w = dstrect.bottom - dstrect.top; x < w; x++)
+		for (int y = 0, h = dstrect.Height(); y < h; y++)
+			for (int x = 0, w = dstrect.Width(); x < w; x++)
 				SetCurrentColor(x + dstrect.left, y + dstrect.top, rgb, use_image);
 	}
 
@@ -65,23 +66,161 @@ int CMarniSurface2::Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a
 	if (!this->Is_open || !src->Is_open)
 		return 0;
 
-	RECT rect;
+	CRect rc0, rc1,
+		trect, rect;
 	if (srcrect)
 	{
 		// invalid area
 		if (srcrect->top < 0 || srcrect->left < 0 || srcrect->right >= src->dwWidth || srcrect->bottom >= src->dwHeight)
 			return 0;
-		memcpy(&rect, src, sizeof(rect));
+		memcpy(&rc0, src, sizeof(rc0));
 	}
-	else SetRect(&rect, 0, 0, src->dwWidth, src->dwHeight);
+	else SetRect(&rc0, 0, 0, src->dwWidth - 1, src->dwHeight - 1);
 
 	if (dstrect)
 	{
+		memcpy(&rc1, dstrect, sizeof(rc1));
+		SetRect(&trect, 0, 0, this->dwWidth - 1, this->dwHeight - 1);
+		if (!Adjust_rect(&trect, (int*)&dstrect->left, &rect))
+			return 0;
 	}
 	else
 	{
-
+		SetRect(&rect, 0, 0, this->dwWidth - 1, this->dwHeight - 1);
+		rc1 = rect;
 	}
+
+	u8 *pp0, *pp1;
+	if (!this->Lock(NULL, &pp0))
+		return 0;
+	if (!src->Lock(NULL, &pp1))
+		return 0;
+
+	int w = rect.Width() + 1,
+		h = rect.Height() + 1;
+	// used for stretched surfaces?
+	float fw = (float)(rc0.Width() + 1) / (float)(rc1.Width() + 1),
+		fh = (float)(rc0.Height() + 1) / (float)(rc1.Height() + 1);
+	int ww = (rc0.Width()) * (rect.Width()) / (rc1.Width()),
+		wh = (rc0.Height()) * (rect.Height()) / (rc1.Height());
+
+	float fx = (float)rc0.left;
+	int ix[3000];	// change this later to std::vector<int>
+	for (int x = 0; x < w; x++)
+		ix[x] = (int)((x + ww) * fw + fx);
+
+	// determine type
+	DWORD dwType = 0;
+	if (!a5 && !a6)
+	{
+		dwType = (src->sdesc.dwRGBBitCount >> 3) |
+			((u8)this->sdesc.bpp >> 3 << 16) | 2
+			* ((this->sdesc.dwRGBBitCount | ((u8)(src->sdesc.bpp & 0xF8) << 16)) & ~7u);
+		if (src->Has_palette)
+			dwType |= 0x100;
+		if (this->Has_palette)
+			dwType |= 0x1000;
+	}
+
+	DWORD *p0, *p1;
+
+	switch (dwType)
+	{
+	// paletted cases
+	case 0x241111:
+		break;
+	case 0x221111:
+		break;
+	case 0x200140:
+		break;
+	case 0x200141:
+		break;
+	case 0x200121:
+		break;
+	// non paletted cases
+	case 0x000044:
+		break;
+	case 0x000042:
+		break;
+	case 0x000022:
+		break;
+	case 0x000024:
+		p0 = (DWORD*)this->CalcAddress(rect.left, rect.top);
+		for (int y = 0; y < h; y++)
+		{
+			p1 = (DWORD*)src->CalcAddress(0, fh + (double)rc0.top);
+			for (int x = 0; x < ix[wh]; x++)
+			{
+
+			}
+		}
+		break;
+	// type mismatch
+	default:
+		Marni1Out("type mismatch, src: %d %d / dst:%d %d",
+			src->sdesc.dwRGBBitCount,
+			src->sdesc.bpp,
+			this->sdesc.dwRGBBitCount,
+			this->sdesc.bpp);
+		if ((dwType & 0x11) == 0x11)
+		{
+			for (int i = 0, si = 1 << src->sdesc.dwRGBBitCount; i < si; ++i)
+			{
+				u32 p;
+				src->GetPaletteColor(i, &p);
+				this->SetPaletteColor(i, p, 0);
+			}
+		}
+		for (int y = 0; y < h; y++)
+		{
+			for (int x = 0; x < w; x++)
+			{
+				u32 p;
+				if (this->Has_palette)
+				{
+					if (!src->GetColor(x, y, &p))
+					{
+						this->Unlock();
+						src->Unlock();
+						return 0;
+					}
+				}
+				else
+				{
+					if (!src->GetCurrentColor(x, y, &p))
+					{
+						this->Unlock();
+						src->Unlock();
+						return 0;
+					}
+				}
+
+				if (!(a5 & 1) || p & 0xffffff)
+				{
+					if (a6)
+					{
+
+					}
+
+					int x0, y0;
+					// mirrored
+					if (a5 & BLTMODE_MIRROR) x0 = rect.left - x;
+					else x0 = rect.left + x;
+					// upside down
+					if (a5 & BLTMODE_FLIP) y0 = rect.bottom - y;
+					else y0 = rect.bottom + y;
+
+					if (this->Has_palette)
+						this->SetColor(x0, y0, p, a5);
+					else this->SetCurrentColor(x0, y0, p, a5);
+				}
+			}
+		}
+		break;
+	}
+
+	this->Unlock();
+	src->Unlock();
 
 	return 1;
 }
@@ -176,6 +315,55 @@ int CMarniSurface2::Release()
 
 //////////////////////////////////////////
 // regular methods
+int CMarniSurface2::WriteBitmap(LPCSTR lpFilename)
+{
+	if (this->Is_open)
+	{
+		u8 *pData = (u8*)calloc(this->dwWidth * this->dwHeight * 3, 1);
+
+		CMarniSurface2 surf;
+		surf.sdesc.dwRBitMask_setcnt = 16;
+		surf.sdesc.field_4 = 8;
+		surf.sdesc.dwBBitMask_setcnt = 0;
+		surf.sdesc.field_2 = 255;
+		surf.sdesc.dwRBitMask_cnt = 8;
+		surf.sdesc.dwRGBBitCount = 24;
+		surf.sdesc.bpp = 0;
+		surf.sdesc.field_A = 8;
+		surf.sdesc.field_8 = 255;
+		surf.sdesc.field_10 = 8;
+		surf.sdesc.field_E = 255;
+		surf.dwWidth = this->dwWidth;
+		surf.dwHeight = this->dwHeight;
+		surf.lPitch = 3 * surf.dwWidth;
+		surf.SetAddress(pData, NULL);
+		surf.field_4C = 1;
+		surf.Is_open = 1;
+		surf.field_44 = 1;
+		surf.Blt(NULL, NULL, this, BLTMODE_FLIP, 0);
+		RECT r;
+		const int sx = 320,
+			sy = 240,
+			total = sx*sy;
+		surf.ClearBg(NULL, 0xffffff, 0);
+		for (int i = 0; i < total; i++)
+		{
+			int w = surf.dwWidth / sx;
+			int h = surf.dwHeight / sy;
+			int x = (i % sx) * w;
+			int y = (i / sy) * h;
+			SetRect(&r, x, y, x + w, y + h);
+			surf.ClearBg((int*)&r, i*8 | 0xff000000, 0);
+		}
+		surf.field_44 = 0;
+
+		lodepng::encode(lpFilename, pData, surf.dwWidth, surf.dwHeight, LodePNGColorType::LCT_RGB);
+		free(pData);
+	}
+
+	return 1;
+}
+
 int CMarniSurface2::SetAddress(u8* pData, u8 *pPalette)
 {
 	if (this->Is_open)

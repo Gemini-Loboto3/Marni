@@ -20,6 +20,8 @@ CConfig config;
 CMarni *pMarni = NULL;
 DWORD time_init;
 
+void DXGL_Attach();
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -32,7 +34,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-HWND				hWnd;
+HWND				hWnd = nullptr;
 
 int APIENTRY WinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -41,6 +43,8 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
+	DXGL_Attach();
 
     // TODO: Place code here.
 
@@ -55,17 +59,13 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-	// create a zeroed object
-	//void *pool = calloc(sizeof(CMarni), 1);
-	//CMarni *ppMarni = new(pool) CMarni();
 	// initialize crap
 	CMarni *ppMarni = new CMarni();
-	ppMarni->Init(hWnd, 320, 240, 0, 1);
-	pMarni = ppMarni;
+	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_TOTAL);
+	if (!pMarni) DestroyWindow(hWnd);
 
 	SetDisplayRect();
-
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MARNITEST));
+	//SetDriverNames();
 
     MSG msg;
 
@@ -93,8 +93,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 		}
 
 		TranslateMessage(&msg);
-		if (msg.message == WM_SYSCOMMAND && msg.wParam == SC_CLOSE)
-			Exit();
 		DispatchMessage(&msg);
     }
 
@@ -122,7 +120,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MARNITEST));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName = 0;//MAKEINTRESOURCEW(IDC_MARNITEST);
+	wcex.lpszMenuName   = 0;
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -141,24 +139,22 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindowExA(0,szWindowClass, szTitle,
-	   //WS_CLIPCHILDREN |  WS_POPUP
-	   WS_CAPTION| WS_SYSMENU | WS_GROUP,//WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX | WS_THICKFRAME),
+	hWnd = CreateWindowExA(0, szWindowClass, szTitle,
+		//WS_CLIPCHILDREN |  WS_POPUP
+		WS_CAPTION | WS_SYSMENU | WS_GROUP,
 		CW_USEDEFAULT, 0,
 		CW_USEDEFAULT, 0,
-	   nullptr, nullptr, hInstance, nullptr);
+		nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+	if (!hWnd)
+		return FALSE;
 
-   ShowWindow(hWnd, nCmdShow);
-   //UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	//UpdateWindow(hWnd);
 
-   return TRUE;
+	return TRUE;
 }
 
 void Exit()
@@ -169,12 +165,7 @@ void Exit()
 	{
 		Exited = 1;
 		if (pMarni)
-		{
 			delete pMarni;
-			//pMarni->Clear();
-			//pMarni->~CMarni();
-			//free(pMarni);
-		}
 		pMarni = NULL;
 	}
 }
@@ -194,7 +185,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (message == WM_SIZE)
 		printf("Resizing\n");
 
-	//if (pMarni)
 	if(pMarni)
 	{
 		if (!pMarni->Message(hWnd, message, wParam, lParam))
@@ -248,6 +238,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					SwitchResolution(Display_mode);
 				}
 			}
+			break;
+		}
+		break;
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_SNAPSHOT:
+			pMarni->MarniBitsMain.WriteBitmap("test.png");
 			break;
 		}
 		break;

@@ -5,6 +5,9 @@
 class CMarniSurface;
 class CMarniSurfaceEx;
 
+#define BLTMODE_MIRROR	0x10
+#define BLTMODE_FLIP	0x20
+
 // software surfaces
 class CMarniSurface2
 {
@@ -43,9 +46,9 @@ public:
 	int   SetAddress(u8* pData, u8 *pPalette);
 	int   SetIndexColor(int x, int y, u32 rgb, u32 flag);
 	int   SetPaletteColor(int index, u32 rgb, int a3);
-	int   SetColor(int x, int y, u32 rgb, int mode);
+	int   SetColor(int x, int y, u32 rgb, int mode) { return 1; }
 	int   SetCurrentColor(int x, int y, u32 rgb, u32 flag);
-	int   GetColor(int x, int y, u32 *rgb);
+	int   GetColor(int x, int y, u32 *rgb) { return 1; }
 	int   GetCurrentColor(int x, int y, u32 *pixel);
 	int   GetPaletteColor(int index, u32 *rgb);
 	int   GetIndexColor(int x, int y, u32 *rgb) { return 1; }
@@ -53,10 +56,10 @@ public:
 	int   CreateWork(int width, int height, int bmp_depth, int srf_depth);
 
 	// operator stuff
-	__inline int operator = (CMarniSurface2 &srf)
-	{
-		return this->copy(srf);
-	}
+	//__inline int operator = (CMarniSurface2 &srf)
+	//{
+	//	return this->copy(srf);
+	//}
 };
 
 // hardware surfaces
@@ -78,7 +81,7 @@ public:
 	LPDIRECTDRAWPALETTE DDpalette;
 	int Is_vmem;
 
-	CMarniSurface* __thiscall constructor();
+	//CMarniSurface* __thiscall constructor();
 
 	int clearBG(int *adjust, u32 rgb, int use_image);
 	int Test(IDirectDraw *pDirectDraw, DDSURFACEDESC *pDesc);
@@ -90,10 +93,10 @@ public:
 	int  CreateOffscreenSurface(IDirectDraw *pDD, int dwWidth, int dwHeight);
 	int  DirectDrawSurface(IDirectDraw *pDD, DDSURFACEDESC *pDesc);
 
-	int operator =(CMarniSurface2 &srf)
-	{
-		return this->copy(srf);
-	}
+	//int operator =(CMarniSurface2 &srf)
+	//{
+	//	return this->copy(srf);
+	//}
 };
 
 // extended hardware surfaces with texture
@@ -108,7 +111,7 @@ public:
 	D3DTEXTUREHANDLE TextureHandle;
 	IDirect3DTexture* DDtexture;
 
-	CMarniSurfaceEx* __thiscall constructor();
+	//CMarniSurfaceEx* __thiscall constructor();
 
 	int CreateTextureObject();
 	int GetTextureHandle(IDirect3DDevice *pD3DDevice);
@@ -130,7 +133,7 @@ public:
 
 	//int field_0;
 	CMarniSurfaceEx *pSurfEx;
-	CMarniSurface Surface;
+	CMarniSurface2 Surface;
 	DDSURFACEDESC desc;
 	int field_C8;
 	int field_CC;
