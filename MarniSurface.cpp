@@ -341,23 +341,18 @@ int CMarniSurface2::WriteBitmap(LPCSTR lpFilename)
 		surf.Is_open = 1;
 		surf.field_44 = 1;
 		surf.Blt(NULL, NULL, this, BLTMODE_FLIP, 0);
-		/*
-		RECT r;
-		const int sx = 320,
-			sy = 240,
-			total = sx*sy;
-		surf.ClearBg(NULL, 0xffffff, 0);
-		for (int i = 0; i < total; i++)
-		{
-			int w = surf.dwWidth / sx;
-			int h = surf.dwHeight / sy;
-			int x = (i % sx) * w;
-			int y = (i / sy) * h;
-			SetRect(&r, x, y, x + w, y + h);
-			surf.ClearBg((int*)&r, i*8 | 0xff000000, 0);
-		}
-		*/
 		surf.field_44 = 0;
+
+		// surfaces use BGR instead of RGB, convert bitmap
+		u8 *p = pData;
+		for (int y = 0; y < surf.dwHeight; y++)
+		{
+			for (int x = 0; x < surf.dwWidth; x++, p+=3)
+			{
+				u8 r = p[2], b = p[0];
+				p[0] = r, p[2] = b;
+			}
+		}
 
 		lodepng::encode(lpFilename, pData, surf.dwWidth, surf.dwHeight, LodePNGColorType::LCT_RGB);
 		free(pData);
@@ -1269,7 +1264,7 @@ int CMarniSurface::BltSurface(RECT *dstrect, RECT *srcrect, CMarniSurface *pSrcS
 		else
 		{
 			dwFlags = DDBLT_WAIT;
-			if (this->DDsurface->Blt(&dstRect, this->DDsurface, &srcRect, dwFlags, &ddbltfx))
+			if (this->DDsurface->Blt(&dstRect, pSrcSurface->DDsurface, &srcRect, dwFlags, &ddbltfx))
 			{
 				// warning message
 				return 0;

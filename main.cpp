@@ -61,7 +61,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	// initialize crap
 	CMarni *ppMarni = new CMarni();
-	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_NOCARD1/*GFX_TOTAL*/);
+	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_TOTAL);
 	if (!pMarni) DestroyWindow(hWnd);
 
 	SetDisplayRect();

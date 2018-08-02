@@ -3,6 +3,8 @@
 #include "debug_new.h"
 #include <assert.h>
 
+#define BASE_BPP	32
+
 typedef struct tagMarniDevice
 {
 	char name[30];
@@ -595,38 +597,32 @@ void CMarni::ClearBuffers()
 {
 	this->Is_gpu_init = 0;
 	this->Is_active = 0;
-	//if (this->card == GFX_SOFTWARE)
+	if (this->card == GFX_SOFTWARE)
 	{
-		CMarni216** p= this->pSurfaces;
+		CMarni216** p = this->pSurfaces;
 		for (int i = 0; i < 513; i++)
 		{
 			if (p[i])
 			{
-				if (p[i]->pSurfEx) delete p[i]->pSurfEx;
+				CMarniSurface2 * pS = p[i]->pSurfEx;
+				if (pS) delete pS;
 				p[i]->pSurfEx = NULL;
 			}
 		}
 	}
-	//else
-	//{
-	//	v6 = (float *)p->pSurfaces;
-	//	v7 = 512;
-	//	do
-	//	{
-	//		if (*(_DWORD *)v6)
-	//		{
-	//			v8 = *(void **)(*(_DWORD *)v6 + 4);
-	//			if (v8)
-	//			{
-	//				MarniSurfaceEx::deconstructor();
-	//				operator delete(v8);
-	//			}
-	//			*(_DWORD *)(*(_DWORD *)v6 + 4) = 0;
-	//		}
-	//		++v6;
-	//		--v7;
-	//	} while (v7);
-	//}
+	else
+	{
+		CMarni216** p = this->pSurfaces;
+		for (int i = 0; i < 513; i++)
+		{
+			if (p[i])
+			{
+				CMarniSurfaceEx * pS = p[i]->pSurfEx;
+				if (pS) delete pS;
+				p[i]->pSurfEx = NULL;
+			}
+		}
+	}
 
 	if (this->pD3DDevice)
 	{
@@ -823,22 +819,22 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 
 			pRes[0].W = this->Render_w;
 			pRes[0].H = this->Render_h;
-			pRes[0].Depth = 32;
+			pRes[0].Depth = BASE_BPP;
 			pRes[0].Fullscreen = 0;
 
 			pRes[1].W = 640;
 			pRes[1].H = 480;
-			pRes[1].Depth = 32;
+			pRes[1].Depth = BASE_BPP;
 			pRes[1].Fullscreen = 0;
 
 			pRes[2].W = 800;
 			pRes[2].H = 600;
-			pRes[2].Depth = 32;
+			pRes[2].Depth = BASE_BPP;
 			pRes[2].Fullscreen = 0;
 
-			pRes[3].W = 1024;;
+			pRes[3].W = 1024;
 			pRes[3].H = 768;;
-			pRes[3].Depth = 32;
+			pRes[3].Depth = BASE_BPP;
 			pRes[3].Fullscreen = 0;
 
 			this->Resolution_count = 4;
@@ -850,12 +846,12 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 
 			pRes[0].W = 640;
 			pRes[0].H = 480;
-			pRes[0].Depth = 32;
+			pRes[0].Depth = BASE_BPP;
 			pRes[0].Fullscreen = 0;
 
 			pRes[1].W = 800;
 			pRes[1].H = 600;
-			pRes[1].Depth = 32;
+			pRes[1].Depth = BASE_BPP;
 			pRes[1].Fullscreen = 0;
 
 			this->Resolution_count = 2;
@@ -1088,7 +1084,7 @@ int CMarni::InitAll()
 			this->MarniBits1.Is_open = 1;
 			this->MarniBits1.dwHeight = this->YSize;
 			this->MarniBits1.dwWidth = this->XSize;
-#if 0
+#if BASE_BPP == 16
 			// old 16 bit surface
 			this->MarniBits1.lPitch = 2 * this->XSize;
 			this->MarniBits1.sdesc.dwRBitMask_setcnt = 0;
