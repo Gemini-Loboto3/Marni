@@ -5,6 +5,7 @@
 class CMarniSurface;
 class CMarniSurfaceEx;
 
+#define BLTMODE_KEYSRC	0x01
 #define BLTMODE_MIRROR	0x10
 #define BLTMODE_FLIP	0x20
 
@@ -18,7 +19,7 @@ public:
 	CMarniSurface2* CMarniSurface2::constructor();
 
 	virtual int ClearBg(int *adjust, int rgb, int use_image);
-	virtual int Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, int a6);
+	virtual int Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, float *a6);
 	virtual int Null();
 	virtual int PalBlt(CMarniSurface2 *pSurfaceSrc, int reserved0, int colcnt, int reserved1);
 	virtual int Lock(u8 **ppBitmap, u8 **ppPalette);
@@ -70,7 +71,7 @@ public:
 	~CMarniSurface();
 
 	virtual int ClearBg(int *adjust, int rgb, int use_image);
-	virtual int Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, int a6);
+	virtual int Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, float *a6);
 	virtual int Null();
 	//virtual int PalBlt(DWORD *a2, int a3, int a4, int a5);
 	virtual int Lock(u8 **ppBitmap, u8 **ppPalette);
@@ -89,7 +90,7 @@ public:
 	int CreateCompatibleSurface(IDirectDraw *pDD, DDSURFACEDESC *desc);
 	int CreateOffscreenSurface(IDirectDraw *pDD, DDSURFACEDESC *desc);
 
-	void BltSurface(RECT *dstrect, RECT *srcrect, CMarniSurface *pSrcSurface, int a5, int a6){}
+	int  BltSurface(RECT *dstrect, RECT *srcrect, CMarniSurface *pSrcSurface, int a5, float *a6);
 	int  CreateOffscreenSurface(IDirectDraw *pDD, int dwWidth, int dwHeight);
 	int  DirectDrawSurface(IDirectDraw *pDD, DDSURFACEDESC *pDesc);
 

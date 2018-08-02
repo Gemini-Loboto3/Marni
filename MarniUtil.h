@@ -154,7 +154,7 @@ extern int Max_resolutions,
 class CRect : public RECT
 {
 public:
-	__inline void Set(int left, int right, int top, int bottom)
+	__inline void Set(int left, int top, int right, int bottom)
 	{
 		this->left = left;
 		this->right = right;
@@ -168,4 +168,6 @@ public:
 
 	__inline LONG Width() { return right - left; }
 	__inline LONG Height() { return bottom - top; }
+
+	void operator = (RECT *r) { memcpy(&this->left, r, sizeof(*r)); }
 };

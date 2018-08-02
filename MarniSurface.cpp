@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "MarniSurface.h"
 #include "debug_new.h"
 #include <assert.h>
@@ -61,7 +61,7 @@ int CMarniSurface2::ClearBg(int *adjust, int rgb, int use_image)
 	return 1;
 }
 
-int CMarniSurface2::Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, int a6)
+int CMarniSurface2::Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, float *a6)
 {
 	if (!this->Is_open || !src->Is_open)
 		return 0;
@@ -341,6 +341,7 @@ int CMarniSurface2::WriteBitmap(LPCSTR lpFilename)
 		surf.Is_open = 1;
 		surf.field_44 = 1;
 		surf.Blt(NULL, NULL, this, BLTMODE_FLIP, 0);
+		/*
 		RECT r;
 		const int sx = 320,
 			sy = 240,
@@ -355,6 +356,7 @@ int CMarniSurface2::WriteBitmap(LPCSTR lpFilename)
 			SetRect(&r, x, y, x + w, y + h);
 			surf.ClearBg((int*)&r, i*8 | 0xff000000, 0);
 		}
+		*/
 		surf.field_44 = 0;
 
 		lodepng::encode(lpFilename, pData, surf.dwWidth, surf.dwHeight, LodePNGColorType::LCT_RGB);
@@ -631,6 +633,21 @@ int CMarniSurface2::GetPaletteColor(int index, u32 *rgb)
 
 int CMarniSurface2::SetPaletteColor(int index, u32 rgb, int a3)
 {
+	if (!this->Is_open)
+		return 0;
+
+	if (a3)
+	{
+		//フラグに対応していません
+		Marni2Out("flag is not supported", __FUNCTION__);
+		return 0;
+	}
+	else if (this->field_C)
+	{
+
+	}
+	else return 0;
+
 	return 1;
 }
 
@@ -844,7 +861,7 @@ int CMarniSurface::ClearBg(int *adjust, int rgb, int use_image)
 	return 1;
 }
 
-int CMarniSurface::Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, int a6)
+int CMarniSurface::Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a5, float *a6)
 {
 	return CMarniSurface2::Blt(dstrect, srcrect, src, a5, a6);
 }
@@ -1084,6 +1101,181 @@ int CMarniSurface::DirectDrawSurface(IDirectDraw *pDD, DDSURFACEDESC *pDesc)
 	this->Is_open = 1;
 	this->field_4C = 0;
 	this->field_44 = 1;
+
+	return 1;
+}
+
+int CMarniSurface::BltSurface(RECT *dstrect, RECT *srcrect, CMarniSurface *pSrcSurface, int a5, float *a6)
+{
+	if (!this->Is_open)
+		return 0;
+
+	if (a5 & 0xe)
+		return this->Blt(dstrect, srcrect, pSrcSurface, a5, a6);
+
+	if(a6 && (a6[0] != 1.f || a6[1] != 1.f || a6[2] != 1.f))
+		return this->Blt(dstrect, srcrect, pSrcSurface, a5, a6);
+
+	CRect rc0, rc1;
+	if (srcrect)
+	{
+		if (srcrect->top < 0
+			|| srcrect->left < 0
+			|| srcrect->right >= pSrcSurface->dwWidth
+			|| srcrect->bottom > pSrcSurface->dwHeight)
+		{
+			// needs warning code here
+			return 0;
+		}
+		rc0 = srcrect;
+	}
+	else rc0.Set(0, 0, pSrcSurface->dwWidth - 1, pSrcSurface->dwHeight - 1);
+
+	if (dstrect)
+	{
+		CRect trect;
+		trect.Set(0, 0, this->dwWidth - 1, this->dwHeight - 1);
+		if (!Adjust_rect(&trect, (int*)&dstrect->left, &rc1))
+			return 0;
+		rc1 = dstrect;
+	}
+	else rc1.Set(0, 0, this->dwWidth - 1, this->dwHeight - 1);
+
+	int w0, h0, left0, left1, right1, top0, top1, bottom, widt0, heig0;
+	w0 = rc0.right - rc0.left;
+	h0 = rc0.bottom - rc0.top;
+	//
+	if (rc1.left >= 0)
+	{
+		left1 = rc1.left;
+		left0 = rc0.left;
+		widt0 = rc0.right - rc0.left;
+	}
+	else
+	{
+		left1 = 0;
+		left0 = rc0.left + w0 * rc1.left / (rc1.left - rc1.right);
+		widt0 = w0 - w0 * rc1.left / (rc1.left - rc1.right);
+	}
+	//
+	if (rc1.top >= 0)
+	{
+		top0 = rc0.top;
+		top1 = rc1.top;
+		heig0 = rc0.bottom - rc0.top;
+	}
+	else
+	{
+		top1 = 0;
+		top0 = h0 * rc1.top / (rc1.top - rc1.bottom) + rc0.top;
+		heig0 = h0 - h0 * rc1.top / (rc1.top - rc1.bottom);
+	}
+	//
+	if (rc1.right < this->dwWidth)
+		right1 = rc1.right;
+
+	else
+	{
+		right1 = this->dwWidth - 1;
+		widt0 = w0 * (this->dwWidth - rc1.left) / (unsigned int)(rc1.right - rc1.left);
+	}
+	//
+	if (rc1.bottom < this->dwHeight)
+		bottom = rc1.bottom;
+	else
+	{
+		bottom = this->dwHeight - 1;
+		heig0 = h0 * (this->dwHeight - rc1.top) / (unsigned int)(rc1.bottom - rc1.top);
+	}
+
+	CRect dstRect, srcRect;
+	DWORD dwFlags;
+	DDBLTFX ddbltfx;
+
+	memset(&ddbltfx, 0, sizeof(ddbltfx));
+	ddbltfx.dwSize = sizeof(ddbltfx);
+	if ((a5 & (BLTMODE_FLIP | BLTMODE_FLIP)) == (BLTMODE_FLIP | BLTMODE_FLIP))
+	{
+		ddbltfx.dwDDFX |= DDOVERFX_MIRRORLEFTRIGHT | DDOVERFX_MIRRORUPDOWN;
+		SetRect(&srcRect,
+			2 * rc0.left + w0 - widt0 - left0,
+			2 * rc0.top  + h0 - heig0 - top0,
+			2 * rc0.left + w0 - left0,
+			2 * rc0.top + h0 - top0);
+	}
+	else if (a5 & BLTMODE_FLIP)
+	{
+		ddbltfx.dwDDFX |= DDOVERFX_MIRRORUPDOWN;
+		SetRect(&srcRect,
+			2 * rc0.left + w0 - widt0 - left0,
+			top0,
+			2 * rc0.left + w0 - left0,
+			top0 + heig0);
+	}
+	else if (a5 & BLTMODE_MIRROR)
+	{
+		ddbltfx.dwDDFX |= DDOVERFX_MIRRORLEFTRIGHT;
+		SetRect(&srcRect,
+			left0,
+			top0,
+			left0 + widt0,
+			2 * rc0.top + h0 - top0);
+	}
+	else SetRect(&srcRect,
+		left0,
+		top0,
+		left0 + widt0,
+		top0  + heig0);
+	SetRect(&dstRect, left1, top1, right1, bottom);
+	++srcRect.right;
+	++srcRect.bottom;
+	++dstRect.right;
+	++dstRect.bottom;
+
+	if (srcRect.top == srcRect.bottom)
+		return 0;
+	if (srcRect.right == srcRect.left)
+		return 0;
+
+	if (a5 & 1)
+		dwFlags = DDBLT_WAIT | DDBLT_KEYSRC;
+	else
+	{
+		if (srcRect.right == srcRect.left + (dstRect.right - dstRect.left) / 2
+			&& this->sdesc.dwRGBBitCount == 16
+			&& pSrcSurface->sdesc.dwRGBBitCount == 16)
+		{
+			int w = srcRect.Width(),
+				h = srcRect.Height();
+			u8 *pBmpDst,
+				*pBmpSrc;
+			if (!this->Lock(&pBmpDst, NULL) || !pSrcSurface->Lock(&pBmpSrc, NULL))
+			{
+				// add warning
+				return 0;
+			}
+
+			for (int y = 0; y < h; y++)
+			{
+				for (int x = 0; x < w; x++)
+				{
+
+				}
+			}
+
+			this->Unlock();
+			pSrcSurface->Unlock();
+		}
+		else
+		{
+			dwFlags = DDBLT_WAIT;
+			if (this->DDsurface->Blt(&dstRect, this->DDsurface, &srcRect, dwFlags, &ddbltfx))
+			{
+				// warning message
+				return 0;
+			}
+		}
+	}
 
 	return 1;
 }

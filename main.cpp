@@ -61,7 +61,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	// initialize crap
 	CMarni *ppMarni = new CMarni();
-	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_TOTAL);
+	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_NOCARD1/*GFX_TOTAL*/);
 	if (!pMarni) DestroyWindow(hWnd);
 
 	SetDisplayRect();
@@ -85,10 +85,14 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 		if (IsGpuActive())
 		{
 			DWORD time_now = timeGetTime();
-			if (time_now - time_init >= 1000)
+			if (time_now - time_init >= 33)
 			{
 				time_init = time_now;
-				pMarni->ClearBg();
+				pMarni->MarniBitsMain.ClearBg(NULL, 0x884032, 0);
+				pMarni->Render();
+				//pMarni->pD3DDevice->BeginScene();
+				//pMarni->ClearBg();
+				//pMarni->pD3DDevice->EndScene();
 			}
 		}
 
@@ -197,7 +201,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-#if 1
+#if 0
 			HBRUSH brush = CreateSolidBrush(0x808080);
 			RECT rc;
 			SetRect(&rc, 0, 0, 320, 240);

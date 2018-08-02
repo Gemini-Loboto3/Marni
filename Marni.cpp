@@ -821,8 +821,8 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 		{
 			MARNI_RES *pRes = &this->Resolutions[0];
 
-			pRes[0].W = 1920;//pMarni->Render_w;
-			pRes[0].H = 1080;//pMarni->Render_h;
+			pRes[0].W = this->Render_w;
+			pRes[0].H = this->Render_h;
 			pRes[0].Depth = 32;
 			pRes[0].Fullscreen = 0;
 
@@ -883,12 +883,24 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 		// more initialization crap for software
 		if (this->card == GFX_SOFTWARE)
 		{
+			this->Is_active = 1;
+			this->Is_gpu_init = 1;
+			this->MarniSrf2.CreateWork(32, 32, 8, this->MarniBitsDst.sdesc.dwRGBBitCount);
 			this->MarniSrf2.ClearBg(0, 1, 0);
 			this->MarniSrf2.Lock(0, 0);
 			// set palette
-			//for (int i = 0; i < 256; i++)
-			//	this->MarniSrf2.SetPaletteColor(i, 0xffffff, 0);
+			for (int i = 0; i < 256; i++)
+				this->MarniSrf2.SetPaletteColor(i, 0xffffff, 0);
 			this->MarniSrf2.Unlock();
+
+			CMarni216 *p216 = new CMarni216();
+			this->pSurfaces[0] = p216;
+			//p216->Surface.field_0 = 0;
+			p216->field_D0 = 1;
+			p216->pSurfEx = NULL;
+ 
+			if (!this->pSurfaces[0]->Surface.copy(this->MarniSrf2))
+				throw 0;	// was a bit different
 		}
 		// and here goes for hardware
 		else
@@ -910,6 +922,7 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 			this->pSurfaces[0] = p216;
 			p216->pSurfEx = NULL;
 			p216->field_D0 = 1;
+			// there's a 6 somewhere, no idea where it ends up
 			if (!p216->Surface.copy(this->MarniSrf2))
 				throw 0;
 			if (!this->ReloadTexture(0))
