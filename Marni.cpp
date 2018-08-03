@@ -147,7 +147,7 @@ int CMarni::ChangeMode(int display_mode)
 
 int CMarni::ChangeResolution(int display_mode)
 {
-	this->DeviceID = display_mode & DeviceId;
+	this->DeviceID = display_mode % DeviceId;
 	this->ChangeResolution(this->XSize, this->YSize, this->BitDepth);
 
 	return 1;

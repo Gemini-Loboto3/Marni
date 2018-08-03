@@ -90,9 +90,6 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 				time_init = time_now;
 				pMarni->MarniBitsMain.ClearBg(NULL, 0x884032, 0);
 				pMarni->Render();
-				//pMarni->pD3DDevice->BeginScene();
-				//pMarni->ClearBg();
-				//pMarni->pD3DDevice->EndScene();
 			}
 		}
 
@@ -123,7 +120,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MARNITEST));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+	wcex.hbrBackground  = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wcex.lpszMenuName   = 0;
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
