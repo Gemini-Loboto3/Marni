@@ -6,9 +6,49 @@
 #include "Config.h"
 
 #include "Marni.h"
+#include "PsxTexture.h"
 #include "hardwarebp.h"
 #include <timeapi.h>
 #include "debug_new.h"
+
+#define FRAMES_PER_SECOND	(60)
+#define TICKS_PER_FRAME		(1)
+#define TICKS_PER_SECOND	(TICKS_PER_FRAME * FRAMES_PER_SECOND)
+
+double TIME_Frequency, TIME_Ticks;
+
+void Ticks()
+{
+	LARGE_INTEGER counter;
+
+	QueryPerformanceCounter(&counter);
+	TIME_Ticks = (double)counter.QuadPart / TIME_Frequency;
+}
+
+bool TIME_Init()
+{
+	LARGE_INTEGER frequency;
+
+	if (!QueryPerformanceFrequency(&frequency))
+		return false;
+
+	TIME_Frequency = (double)frequency.QuadPart / (double)TICKS_PER_SECOND;
+	Ticks();
+	return true;
+}
+
+DWORD Sync()
+{
+	DWORD lastTicks, currentTicks;
+	LARGE_INTEGER counter;
+
+	QueryPerformanceCounter(&counter);
+	lastTicks = (DWORD)TIME_Ticks;
+	TIME_Ticks = (double)counter.QuadPart / TIME_Frequency;
+	currentTicks = (DWORD)TIME_Ticks;
+
+	return (currentTicks > lastTicks) ? currentTicks - lastTicks : 0;
+}
 
 #define newclear(TYPE)		new(calloc(sizeof(TYPE), 1)) TYPE();
 
@@ -35,6 +75,7 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 HWND				hWnd = nullptr;
+u8*					buffer = nullptr;
 
 int APIENTRY WinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -59,9 +100,11 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
+	buffer = new u8[10 * 1024 * 1024];
+
 	// initialize crap
 	CMarni *ppMarni = new CMarni();
-	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_TOTAL);
+	pMarni = ppMarni->Init(hWnd, 320, 240, 1, GFX_TOTAL);
 	if (!pMarni) DestroyWindow(hWnd);
 
 	SetDisplayRect();
@@ -71,7 +114,16 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	pMarni->ClearBG_ = 1;
 
+	CPsxTexture psx;
+	LoadFile("..\\USA\\Data\\SIDE06.TIM", buffer);
+	//psx.Store(buffer);
+	psx.StorePng("01.png");
+
+	RECT rc;
+	SetRect(&rc, 0, 0, psx.dwWidth - 1, psx.dwHeight - 1);
+
 	time_init = timeGetTime();
+	TIME_Init();
     // Main message loop:
     while (1)
     {
@@ -84,11 +136,12 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 		if (IsGpuActive())
 		{
-			DWORD time_now = timeGetTime();
-			if (time_now - time_init >= 33)
+			//DWORD time_now = timeGetTime();
+			if (Sync()/*time_now - time_init >= 31*/)
 			{
-				time_init = time_now;
-				pMarni->MarniBitsMain.ClearBg(NULL, 0x884032, 0);
+				//time_init = time_now;
+				//pMarni->MarniBitsMain.ClearBg(NULL, 0x884032, 0);
+				pMarni->MarniBitsMain.BltSurface(NULL, &rc, &psx.surf, 0, NULL);
 				pMarni->Render();
 			}
 		}
@@ -97,6 +150,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 		DispatchMessage(&msg);
     }
 
+	delete[] buffer;
     return (int) msg.wParam;
 }
 
@@ -198,13 +252,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-#if 0
-			HBRUSH brush = CreateSolidBrush(0x808080);
-			RECT rc;
-			SetRect(&rc, 0, 0, 320, 240);
-			FillRect(hdc, &rc, brush);
-			DeleteObject(brush);
-#endif
             EndPaint(hWnd, &ps);
         }
         break;

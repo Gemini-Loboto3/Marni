@@ -849,8 +849,8 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 			pRes[0].Depth = BASE_BPP;
 			pRes[0].Fullscreen = 0;
 
-			pRes[1].W = 800;
-			pRes[1].H = 600;
+			pRes[1].W = 960;
+			pRes[1].H = 720;
 			pRes[1].Depth = BASE_BPP;
 			pRes[1].Fullscreen = 0;
 

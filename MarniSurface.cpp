@@ -1189,7 +1189,7 @@ int CMarniSurface::BltSurface(RECT *dstrect, RECT *srcrect, CMarniSurface *pSrcS
 
 	memset(&ddbltfx, 0, sizeof(ddbltfx));
 	ddbltfx.dwSize = sizeof(ddbltfx);
-	if ((a5 & (BLTMODE_FLIP | BLTMODE_FLIP)) == (BLTMODE_FLIP | BLTMODE_FLIP))
+	if ((a5 & (BLTMODE_MIRROR | BLTMODE_FLIP)) == (BLTMODE_MIRROR | BLTMODE_FLIP))
 	{
 		ddbltfx.dwDDFX |= DDOVERFX_MIRRORLEFTRIGHT | DDOVERFX_MIRRORUPDOWN;
 		SetRect(&srcRect,

@@ -1076,7 +1076,7 @@ void glTexture__Destroy(glTexture *This)
 
 void glTexture__SetFilter(glTexture *This, int level, GLint mag, GLint min, glRenderer *renderer)
 {
-	dxglcfg.texfilter = config.filter ? 5 : 0;
+	dxglcfg.texfilter = 5;//config.filter ? 5 : 0;
 	// 'This' pointer may be set to NULL to set a sampler level when ARB_sampler_objects is available
 	switch (dxglcfg.texfilter)
 	{

@@ -171,3 +171,5 @@ public:
 
 	void operator = (RECT *r) { memcpy(&this->left, r, sizeof(*r)); }
 };
+
+void LoadFile(LPCSTR filename, u8* buffer);

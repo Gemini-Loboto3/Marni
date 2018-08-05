@@ -592,3 +592,18 @@ void encodeWithState(const char* filename, std::vector<u8>& image, u32 width, u3
 	lodepng::encode(png, image, width, height, state);
 	lodepng::save_file(png, filename);
 }
+
+void LoadFile(LPCSTR filename, u8* buffer)
+{
+	FILE *f;
+	if (fopen_s(&f, filename, "rb+"))
+		return;
+
+	size_t size;
+	fseek(f, 0, SEEK_END);
+	size = ftell(f);
+	fseek(f, 0, SEEK_SET);
+
+	fread(buffer, size, 1, f);
+	fclose(f);
+}
