@@ -104,7 +104,7 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 
 	// initialize crap
 	CMarni *ppMarni = new CMarni();
-	pMarni = ppMarni->Init(hWnd, 320, 240, 1, GFX_TOTAL);
+	pMarni = ppMarni->Init(hWnd, 320, 240, 0, GFX_TOTAL);
 	if (!pMarni) DestroyWindow(hWnd);
 
 	SetDisplayRect();
@@ -266,7 +266,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_F7:
 			{
 				DWORD timer = timeGetTime();
-				if (time_init + 10000 > timer)
+				if (timer + 10000 > time_init)
 				{
 					Display_mode--;
 					if (Display_mode < 0)
@@ -278,7 +278,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_F8:
 			{
 				DWORD timer = timeGetTime();
-				if (time_init + 10000 > timer)
+				if (timer + 10000 > time_init)
 				{
 					Display_mode++;
 					if (Display_mode >= Max_resolutions)

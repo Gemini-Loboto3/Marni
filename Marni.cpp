@@ -844,18 +844,23 @@ CMarni* CMarni::Init(HWND hWnd, int screen_w, int screen_h, int display_mode, in
 		{
 			MARNI_RES *pRes = &this->Resolutions[0];
 
-			pRes[0].W = 640;
-			pRes[0].H = 480;
+			pRes[0].W = 320;
+			pRes[0].H = 240;
 			pRes[0].Depth = BASE_BPP;
 			pRes[0].Fullscreen = 0;
 
-			pRes[1].W = 960;
-			pRes[1].H = 720;
+			pRes[1].W = 640;
+			pRes[1].H = 480;
 			pRes[1].Depth = BASE_BPP;
 			pRes[1].Fullscreen = 0;
 
-			this->Resolution_count = 2;
-			this->Softfull_rescnt = 2;
+			pRes[2].W = 960;
+			pRes[2].H = 720;
+			pRes[2].Depth = BASE_BPP;
+			pRes[2].Fullscreen = 0;
+
+			this->Resolution_count = 3;
+			this->Softfull_rescnt = 3;
 		}
 
 		if (this->display_mode >= this->Resolution_count)

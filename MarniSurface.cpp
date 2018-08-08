@@ -208,7 +208,7 @@ int CMarniSurface2::Blt(RECT *dstrect, RECT *srcrect, CMarniSurface2 *src, int a
 					else x0 = rect.left + x;
 					// upside down
 					if (a5 & BLTMODE_FLIP) y0 = rect.bottom - y;
-					else y0 = rect.bottom + y;
+					else y0 = rect.top + y;
 
 					if (this->Has_palette)
 						this->SetColor(x0, y0, p, a5);
@@ -340,7 +340,7 @@ int CMarniSurface2::WriteBitmap(LPCSTR lpFilename)
 		surf.field_4C = 1;
 		surf.Is_open = 1;
 		surf.field_44 = 1;
-		surf.Blt(NULL, NULL, this, BLTMODE_FLIP, 0);
+		surf.Blt(NULL, NULL, this, 0/*BLTMODE_FLIP*/, 0);
 		surf.field_44 = 0;
 
 		// surfaces use BGR instead of RGB, convert bitmap
